@@ -28,19 +28,14 @@ public static class Parser
             return null;
         }
 
-        return new Expression(Parse(items[0]), ParseExpressionRec(items, index + 1));
+        return new SymbolicExpression(new Cons(Parse(items[0]), ParseExpressionRec(items, index + 1)));
     }
     
-    private static Expression? ParseExpression(string expr)
+    private static Cons? ParseExpression(string expr)
     {
         var slicedExpr = expr.Substring(1, expr.Length - 2);
         var items = Regex.Split(slicedExpr, @"(\w|\(.+\))");
-        Expression? expression = null;
-        Expression? current = expression;
-        foreach (var item in items)
-        {
-            current = new 
-        }
+        return ParseExpressionRec(items, 0)?.Cons;
     }
 
     private static SymbolicExpression ParseSymbolicExpression(string expr)

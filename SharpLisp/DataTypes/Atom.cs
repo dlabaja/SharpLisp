@@ -10,4 +10,18 @@ public class Atom
         Value = value;
         Type = type;
     }
+
+    public bool IsNil()
+    {
+        return Type == typeof(Nil);
+    }
+
+    public override string ToString()
+    {
+        if (IsNil())
+        {
+            return "nil";
+        }
+        return $"{(Type)Value}";
+    }
 }
