@@ -10,6 +10,26 @@ public class Atom
         Value = value;
         Type = type;
     }
+    
+    public bool IsInt()
+    {
+        return Type == typeof(long);
+    }
+
+    public bool IsFloat()
+    {
+        return Type == typeof(double);
+    }
+
+    public bool IsString()
+    {
+        return Type == typeof(string);
+    }
+
+    public bool IsSymbol()
+    {
+        return Type == typeof(Symbol);
+    }
 
     public bool IsNil()
     {
@@ -18,10 +38,15 @@ public class Atom
 
     public override string ToString()
     {
-        if (IsNil())
+        if (IsString())
         {
-            return "nil";
+            return $"\"{Value}\"";
         }
-        return $"{(Type)Value}";
+
+        if (IsSymbol())
+        {
+            return Value.ToString().ToUpper();
+        }
+        return  Convert.ChangeType(Value, Type).ToString() ?? "";
     }
 }

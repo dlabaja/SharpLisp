@@ -22,6 +22,7 @@ public class Cons
 
     public bool IsListCons()
     {
-        return Car.IsAtom() && (Cdr.IsCons() || Cdr.Atom?.Value.IsNil());
+        return Car.IsAtom() && 
+               (Cdr.IsCons() || (Cdr.Atom != null && Cdr.Atom.IsNil()));
     }
 }

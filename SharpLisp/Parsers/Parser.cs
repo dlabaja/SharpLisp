@@ -6,47 +6,60 @@ namespace SharpLisp.Parsers;
 
 public static class Parser
 {
-    private static Atom? ParseAtom(string expr)
+    private static SymbolicExpression ParseAtom(string expr)
     {
+        Atom atom;
         if (long.TryParse(expr, out var num))
         {
-            return new Atom(num, typeof(long));
+            atom = new Atom(num, typeof(long));
         }
-
-        if (double.TryParse(expr, out var floatNum))
+        else if (double.TryParse(expr, out var floatNum))
         {
-            return new Atom(floatNum, typeof(double));
+            atom = new Atom(floatNum, typeof(double));
+        }
+        else if (expr.Equals("NIL", StringComparison.CurrentCultureIgnoreCase))
+        {
+            atom = Nil.NIL;
+        }
+        else if (expr.StartsWith('"') && expr.EndsWith('"'))
+        {
+            atom = new Atom(expr, typeof(string));
+        }
+        else
+        {
+            atom = new Atom(expr.ToUpper(), typeof(Symbol));
         }
 
-        return null;
+        return new SymbolicExpression(atom);
     }
 
-    private static SymbolicExpression? ParseExpressionRec(string[] items, int index)
+    private static SymbolicExpression ParseExpressionRec(string[] items, int index)
     {
         if (index > items.Length - 1)
         {
-            return null;
+            return new SymbolicExpression(Nil.NIL);
         }
 
         return new SymbolicExpression(new Cons(Parse(items[0]), ParseExpressionRec(items, index + 1)));
     }
     
-    private static Cons? ParseExpression(string expr)
+    private static SymbolicExpression ParseExpression(string expr)
     {
         var slicedExpr = expr.Substring(1, expr.Length - 2);
         var items = Regex.Split(slicedExpr, @"(\w|\(.+\))");
-        return ParseExpressionRec(items, 0)?.Cons;
+        return ParseExpressionRec(items, 0);
     }
 
     private static SymbolicExpression ParseSymbolicExpression(string expr)
     {
         if (IsAtom(expr))
         {
-            ParseAtom(expr);
+            return ParseAtom(expr);
         }
-        else if (IsExpresion(expr))
+
+        if (IsExpresion(expr))
         {
-            ParseExpression(expr);
+            return ParseExpression(expr);
         }
 
         throw new ParseException($"Cannot parse the sexpression {expr}");

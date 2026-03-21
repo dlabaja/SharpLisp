@@ -1,4 +1,3 @@
-﻿using SharpLisp.Eval;
-using SharpLisp.Parsers;
+﻿using SharpLisp;
 
-Console.WriteLine(Eval.Evaluate(Parser.Parse("1")));
+Interpreter.Eval("1");
