@@ -11,18 +11,43 @@ public class Cons
         Cdr = cdr;
     }
 
-    public override string ToString()
-    {
-        if (IsListCons())
-        {
-            return $"{Car} {Cdr}";
-        }
-        return $"({Car} . {Cdr})";
-    }
-
     public bool IsListCons()
     {
         return Car.IsAtom() && 
                (Cdr.IsCons() || (Cdr.Atom != null && Cdr.Atom.IsNil()));
+    }
+
+    private string ListStringRec(Cons? cons)
+    {
+        if (cons == null)
+        {
+            return "";
+        }
+        
+        if (cons.Car.IsCons())
+        {
+            return $"{cons.Car.Cons!.ListString()} {ListStringRec(cons.Cdr.Cons)}";
+        }
+
+        return $"{cons.Car} {ListStringRec(cons.Cdr.Cons)}";
+    }
+
+    public string ListString()
+    {
+        return "(" + ListStringRec(this).Trim() + ")";
+    }
+
+    public override string ToString()
+    {
+        if (Cdr.Atom != null)
+        {
+            if (Cdr.Atom.IsNil())
+            {
+                return $"{Car}";
+            }
+
+            return $"{Car} . {Cdr}";
+        }
+        return $"{Car} {Cdr}";
     }
 }
