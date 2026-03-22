@@ -4,15 +4,34 @@ namespace SharpLisp.Parsers;
 
 public static class PreParser
 {
-    private static void BracketsToNil(StringBuilder expr)
+    public static string ExpressionToUpper(char[] expr)
     {
-        expr.Replace("()", "NIL");
+        char prev = '\0';
+        var canProcess = true;
+        for (int i = 0; i < expr.Length; i++)
+        {
+            if (expr[i] == '"' && prev != '\\')
+            {
+                canProcess = !canProcess;
+            }
+
+            if (!canProcess)
+            {
+                continue;
+            }
+
+            expr[i] = char.ToUpper(expr[i]);
+        }
+
+        return new string(expr);
     }
     
     public static string PreParse(string expr)
     {
-        var builder = new StringBuilder(expr);
-        BracketsToNil(builder);
+        var new_exp = ExpressionToUpper(expr.Trim().ToCharArray());
+        var builder = new StringBuilder();
+        builder.Replace("()", "NIL");
+        builder.Replace('\n', ' ');
         return builder.ToString();
     }
 }
