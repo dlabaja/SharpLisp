@@ -29,7 +29,7 @@ public static class PreParser
     public static string PreParse(string expr)
     {
         var new_exp = ExpressionToUpper(expr.Trim().ToCharArray());
-        var builder = new StringBuilder();
+        var builder = new StringBuilder(new_exp);
         builder.Replace("()", "NIL");
         builder.Replace('\n', ' ');
         return builder.ToString();

@@ -6,8 +6,9 @@ public static class Interpreter
 {
     public static void Eval(string expr)
     {
-        Console.WriteLine(SharpLisp.Eval.Eval.Evaluate(
+        var exp = SharpLisp.Eval.Eval.Evaluate(
             Parser.Parse(
-                PreParser.PreParse(expr))));
+                PreParser.PreParse(expr)));
+        Console.WriteLine(exp.Cons.ListString());
     }
 }

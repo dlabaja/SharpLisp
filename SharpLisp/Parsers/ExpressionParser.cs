@@ -5,7 +5,7 @@ namespace SharpLisp.Parsers;
 
 public static class ExpressionParser
 {
-    private static string _atomChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-\"";
+    private static string _atomChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-+/*-%!?\"";
     private static string _exprChars = "()";
     
     public static SymbolicExpression ParseExpression(string expr)
@@ -43,7 +43,7 @@ public static class ExpressionParser
         var result = new List<string>();
         foreach (var (start, end) in list)
         {
-            var part = expr.Substring(start, end - start);
+            var part = expr.Substring(start, end - start + 1).Trim();
             result.Add(part);
         }
 
@@ -97,6 +97,16 @@ public static class ExpressionParser
                 numberOfBracketsToFind--;
             }
             
+        }
+
+        if (atomProcessing)
+        {
+            indexList.Add((start, expr.Length - 1));
+        }
+
+        if (expressionProcessing)
+        {
+            indexList.Add((start, expr.Length - 1));
         }
 
         return indexList;
