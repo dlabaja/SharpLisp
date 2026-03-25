@@ -1,4 +1,5 @@
 using SharpLisp.DataTypes;
+using SharpLisp.Factories;
 
 namespace SharpLisp.Parsers;
 
@@ -6,28 +7,28 @@ public static class AtomParser
 {
     public static SymbolicExpression ParseAtom(string expr)
     {
-        Atom atom;
+        SymbolicExpression atom;
         if (long.TryParse(expr, out var num))
         {
-            atom = new Atom(num, typeof(long));
+            atom = SymbolicExpressionFactory.Int(num);
         }
         else if (double.TryParse(expr, out var floatNum))
         {
-            atom = new Atom(floatNum, typeof(double));
+            atom = SymbolicExpressionFactory.Float(num);
         }
         else if (expr.Equals("NIL", StringComparison.CurrentCultureIgnoreCase))
         {
-            atom = Nil.NIL;
+            atom = SymbolicExpressionFactory.Nil;
         }
         else if (expr.StartsWith('"') && expr.EndsWith('"'))
         {
-            atom = new Atom(expr, typeof(string));
+            atom = SymbolicExpressionFactory.String(expr);
         }
         else
         {
-            atom = new Atom(expr.ToUpper(), typeof(Symbol));
+            atom = SymbolicExpressionFactory.Symbol(expr);
         }
 
-        return new SymbolicExpression(atom);
+        return atom;
     }
 }

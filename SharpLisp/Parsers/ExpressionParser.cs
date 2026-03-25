@@ -1,4 +1,5 @@
 using SharpLisp.DataTypes;
+using SharpLisp.Factories;
 using System.Text.RegularExpressions;
 
 namespace SharpLisp.Parsers;
@@ -18,7 +19,7 @@ public static class ExpressionParser
     {
         if (items.Count == 0)
         {
-            return new SymbolicExpression(Nil.NIL);
+            return SymbolicExpressionFactory.Nil;
         }
 
         var first = items[0];
