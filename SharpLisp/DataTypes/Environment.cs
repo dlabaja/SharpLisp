@@ -29,48 +29,60 @@ public class Environment
         _values.TryAdd(name, expr);
     }
     
-    public Primitive GetPrimitive(string name)
+    public bool TryGetPrimitive(string name, out Primitive value)
     {
-        if (_primitives.TryGetValue(name, out Primitive? value))
+        if (_primitives.TryGetValue(name, out var val))
         {
-            return value;
+            value = val;
+            return true;
         }
-
+        
         if (Parent != null)
         {
-            return Parent.GetPrimitive(name);
+            var p = Parent.TryGetPrimitive(name, out val);
+            value = val;
+            return p;
         }
 
-        throw new FunctionNotFoundException($"Cannot find primitive {name}");
+        value = default;
+        return false;
     }
 
-    public Function GetFunction(string name)
+    public bool TryGetFunction(string name, out Function value)
     {
-        if (_functions.TryGetValue(name, out Function? value))
+        if (_functions.TryGetValue(name, out var val))
         {
-            return value;
+            value = val;
+            return true;
         }
 
         if (Parent != null)
         {
-            return Parent.GetFunction(name);
+            var p = Parent.TryGetFunction(name, out val);
+            value = val;
+            return p;
         }
 
-        throw new FunctionNotFoundException($"Cannot find function {name}");
+        value = default;
+        return false;
     }
 
-    public SymbolicExpression GetValue(string name)
+    public bool TryGetValue(string name, out SymbolicExpression value)
     {
-        if (_values.TryGetValue(name, out SymbolicExpression? value))
+        if (_values.TryGetValue(name, out var val))
         {
-            return value;
+            value = val;
+            return true;
         }
 
         if (Parent != null)
         {
-            return Parent.GetValue(name);
+            var p = Parent.TryGetValue(name, out val);
+            value = val;
+            return p;
         }
 
-        throw new ValueNotFoundException(name);
+        value = default;
+        return false;
     }
 }

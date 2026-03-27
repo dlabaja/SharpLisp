@@ -2,14 +2,14 @@ namespace SharpLisp.DataTypes;
 
 public class Primitive
 {
-    public Func<SymbolicExpression[], SymbolicExpression> EvalFunction { get; }
+    public Func<List<SymbolicExpression>, SymbolicExpression> EvalFunction { get; }
 
-    public Primitive(Func<SymbolicExpression[], SymbolicExpression> function)
+    public Primitive(Func<List<SymbolicExpression>, SymbolicExpression> function)
     {
         EvalFunction = function;
     }
 
-    public SymbolicExpression Evaluate(SymbolicExpression[] args)
+    public SymbolicExpression Evaluate(List<SymbolicExpression> args)
     {
         return EvalFunction(args);
     }

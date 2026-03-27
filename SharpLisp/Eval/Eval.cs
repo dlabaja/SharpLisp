@@ -1,28 +1,25 @@
 using SharpLisp.DataTypes;
+using SharpLisp.Defined;
 using SharpLisp.Exceptions;
+using Environment = SharpLisp.DataTypes.Environment;
 
 namespace SharpLisp.Eval;
 
 public static class Eval
 {
-    public static SymbolicExpression EvaluateAtom(SymbolicExpression expression)
-    {
-        return expression;
-    }
-    
-    public static SymbolicExpression EvaluateExpression(SymbolicExpression expression)
-    {
-        return expression;
-    }
-    
     public static SymbolicExpression Evaluate(SymbolicExpression expression)
+    {
+        return EvaluateInEnv(expression, GlobalEnvironment.Environment);
+    }
+
+    public static SymbolicExpression EvaluateInEnv(SymbolicExpression expression, Environment environment)
     {
         switch (expression.Type)
         {
             case SymbolicExpressionType.Atom:
-                return EvaluateAtom(expression);
+                return EvalAtom.EvaluateAtom(expression, environment);
             case SymbolicExpressionType.Cons:
-                return EvaluateExpression(expression);
+                return EvalExpression.EvaluateExpression(expression, environment);
         }
 
         throw new EvalException(expression);

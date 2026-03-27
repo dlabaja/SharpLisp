@@ -1,3 +1,3 @@
 ﻿using SharpLisp;
 
-Interpreter.Eval("""(+ (+ 1 2) (+ 3 (+ 4 4)))""");
+Interpreter.Eval("(+ 1 (+ 2 3) (+ 4 5))");
