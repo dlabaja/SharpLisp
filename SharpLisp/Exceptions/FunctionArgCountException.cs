@@ -1,3 +1,3 @@
 namespace SharpLisp.Exceptions;
 
-public class FunctionArgCountException(int required, int has) : Exception($"Invalid args for function, required {required}, got {has}");
+public class FunctionArgCountException(string funcName, int required, int has) : Exception($"Invalid arg count for {funcName}, required {required}, got {has}");
