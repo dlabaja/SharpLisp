@@ -1,4 +1,5 @@
 using SharpLisp.DataTypes;
+using SharpLisp.Defined;
 using SharpLisp.Exceptions;
 using SharpLisp.Utils;
 using Environment = SharpLisp.DataTypes.Environment;
@@ -17,20 +18,38 @@ public static class EvalExpression
         var op = expr.Cons.Car;
         if (op.IsAtom() && op.Atom.IsSymbol())
         {
-            return EvaluateExp(op, expr.Cons.Cdr, environment);
+            return EvaluateExp(op.ToString(), expr.Cons.Cdr, environment);
         }
 
         throw new EvalException(expr);
     }
 
-    private static SymbolicExpression EvaluateExp(SymbolicExpression op, SymbolicExpression args, Environment environment)
+    private static SymbolicExpression EvaluateExp(string op, SymbolicExpression args, Environment environment)
     {
-        if (environment.TryGetPrimitive(op.ToString(), out var primitive))
+        return op switch
+        {
+            SpecialOperatorsNames.Quote => EvaluateQuote(args),
+            _ => EvaluateFunction(op, args, environment)
+        };
+    }
+
+    private static SymbolicExpression EvaluateQuote(SymbolicExpression args)
+    {
+        var list = ListUtils.ConsToList(args);
+        if (list.Count != 1)
+        {
+            throw new FunctionArgCountException(SpecialOperatorsNames.Quote, 1, list.Count);
+        }
+        return list[0];
+    }
+
+    private static SymbolicExpression EvaluateFunction(string op, SymbolicExpression args, Environment environment)
+    {
+        if (environment.TryGetPrimitive(op, out var primitive))
         {
             return ApplyPrimitive(primitive, args, environment);
         }
-
-        if (environment.TryGetFunction(op.ToString(), out var function))
+        if (environment.TryGetFunction(op, out var function))
         {
             return ApplyFunction(function, args, environment);
         }
