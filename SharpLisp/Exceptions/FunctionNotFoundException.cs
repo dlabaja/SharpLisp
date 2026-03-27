@@ -1,6 +1,3 @@
 namespace SharpLisp.Exceptions;
 
-public class FunctionNotFoundException : Exception
-{
-    public FunctionNotFoundException(string message) {}
-}
+public class FunctionNotFoundException(string name) : Exception($"Function {name} wasn't found in environment");

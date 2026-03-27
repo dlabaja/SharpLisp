@@ -1,6 +1,3 @@
 namespace SharpLisp.Exceptions;
 
-public class ValueNotFoundException : Exception
-{
-    public ValueNotFoundException(string message) {}
-}
+public class ValueNotFoundException(string name) : Exception($"Cannot find value {name}");

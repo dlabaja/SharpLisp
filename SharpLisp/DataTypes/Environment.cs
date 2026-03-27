@@ -71,6 +71,6 @@ public class Environment
             return Parent.GetValue(name);
         }
 
-        throw new ValueNotFoundException($"Cannot find value {name}");
+        throw new ValueNotFoundException(name);
     }
 }

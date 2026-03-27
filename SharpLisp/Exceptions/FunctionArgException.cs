@@ -1,6 +1,3 @@
 namespace SharpLisp.Exceptions;
 
-public class FunctionArgException : Exception
-{
-    public FunctionArgException(string message) {}
-}
+public class FunctionArgException(string message = "") : Exception($"Invalid args for function, {message ?? "no message provided"}");

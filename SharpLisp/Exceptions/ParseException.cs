@@ -1,6 +1,3 @@
 namespace SharpLisp.Exceptions;
 
-public class ParseException : Exception
-{
-    public ParseException(string message) {}
-}
+public class ParseException(string expr) : Exception($"Cannot parse the sexpression {expr}");

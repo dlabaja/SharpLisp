@@ -25,6 +25,6 @@ public static class Eval
                 return EvaluateExpression(expression);
         }
 
-        throw new EvalException("Expression has no type");
+        throw new EvalException(expression);
     }
 }
