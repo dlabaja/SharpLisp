@@ -46,7 +46,16 @@ public class SymbolicExpression
                 return Atom?.ToString() ?? "";
             case SymbolicExpressionType.Cons:
                 return Cons?.ToString() ?? "";
-        };
+        }
         return "";
+    }
+
+    public string ToStringOutput()
+    {
+        if (IsAtom())
+        {
+            return Atom.ToString();
+        }
+        return Cons!.ListString();   
     }
 }

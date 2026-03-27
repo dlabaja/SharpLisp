@@ -1,4 +1,3 @@
-using SharpLisp.DataTypes;
 using SharpLisp.Parsers;
 
 namespace SharpLisp;
@@ -12,21 +11,13 @@ public static class Interpreter
             var exp = SharpLisp.Eval.Eval.Evaluate(
                 Parser.Parse(
                     PreParser.PreParse(expr)));
-            PrintOutput(exp);
+            Console.WriteLine(exp.ToStringOutput());
         }
         catch (Exception e)
         {
+            Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine(e.Message);
+            Console.ResetColor();
         }
-    }
-
-    private static void PrintOutput(SymbolicExpression expr)
-    {
-        if (expr.IsAtom())
-        {
-            Console.WriteLine(expr.Atom);
-            return;
-        }
-        Console.WriteLine(expr.Cons!.ListString());
     }
 }

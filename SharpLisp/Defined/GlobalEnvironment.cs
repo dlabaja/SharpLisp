@@ -11,11 +11,12 @@ public static class GlobalEnvironment
     private static Environment GetGlobalEnvironment()
     {
         var env = new Environment(null);
-        env.AddPrimitive("+", new Primitive(PrimitiveFunctions.SumPrimitive));
-        env.AddPrimitive("-", new Primitive(PrimitiveFunctions.SubtractPrimitive));
-        env.AddPrimitive("*", new Primitive(PrimitiveFunctions.MultiplyPrimitive));
-        env.AddPrimitive("/", new Primitive(PrimitiveFunctions.DividePrimitive));
-        env.AddPrimitive("SQRT", new Primitive(PrimitiveFunctions.SqrtPrimitive));
+        env.AddPrimitive(PrimitiveNames.Sum, new Primitive(PrimitiveFunctions.SumPrimitive));
+        env.AddPrimitive(PrimitiveNames.Subtract, new Primitive(PrimitiveFunctions.SubtractPrimitive));
+        env.AddPrimitive(PrimitiveNames.Multiply, new Primitive(PrimitiveFunctions.MultiplyPrimitive));
+        env.AddPrimitive(PrimitiveNames.Divide, new Primitive(PrimitiveFunctions.DividePrimitive));
+        env.AddPrimitive(PrimitiveNames.Sqrt, new Primitive(PrimitiveFunctions.SqrtPrimitive));
+        env.AddPrimitive(PrimitiveNames.Print, new Primitive(PrimitiveFunctions.PrintPrimitive));
         env.AddValue("PI", SymbolicExpressionFactory.Float(double.Pi));
         env.AddValue("E", SymbolicExpressionFactory.Float(double.E));
         return env;
