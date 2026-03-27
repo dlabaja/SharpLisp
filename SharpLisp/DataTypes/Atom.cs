@@ -1,4 +1,5 @@
 using SharpLisp.Exceptions;
+using System.Globalization;
 
 namespace SharpLisp.DataTypes;
 
@@ -94,6 +95,6 @@ public class Atom
         {
             return Value.ToString().ToUpper();
         }
-        return Convert.ChangeType(Value, Type).ToString() ?? "";
+        return Convert.ChangeType(Value, Type).ToString(CultureInfo.InvariantCulture) ?? "";
     }
 }

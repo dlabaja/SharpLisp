@@ -6,7 +6,7 @@ namespace SharpLisp.Parsers;
 
 public static class ExpressionParser
 {
-    private static string _atomChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-+/*-%!?\"";
+    private static string _atomChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-+/*-%!?.\"";
     private static string _exprChars = "()";
     
     public static SymbolicExpression ParseExpression(string expr)
