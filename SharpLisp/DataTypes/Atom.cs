@@ -87,7 +87,7 @@ public class Atom
     {
         if (IsString())
         {
-            return $"\"{Value}\"";
+            return $"{Value}";
         }
 
         if (IsSymbol())

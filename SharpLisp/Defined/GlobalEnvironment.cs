@@ -15,9 +15,9 @@ public static class GlobalEnvironment
         env.AddPrimitive("-", new Primitive(PrimitiveFunctions.SubtractPrimitive));
         env.AddPrimitive("*", new Primitive(PrimitiveFunctions.MultiplyPrimitive));
         env.AddPrimitive("/", new Primitive(PrimitiveFunctions.DividePrimitive));
-        env.AddPrimitive("sqrt", new Primitive(PrimitiveFunctions.SqrtPrimitive));
-        env.AddValue("pi", SymbolicExpressionFactory.Float(double.Pi));
-        env.AddValue("e", SymbolicExpressionFactory.Float(double.E));
+        env.AddPrimitive("SQRT", new Primitive(PrimitiveFunctions.SqrtPrimitive));
+        env.AddValue("PI", SymbolicExpressionFactory.Float(double.Pi));
+        env.AddValue("E", SymbolicExpressionFactory.Float(double.E));
         return env;
     }
 }

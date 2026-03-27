@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace SharpLisp.DataTypes;
 
 public enum SymbolicExpressionType
@@ -24,11 +26,13 @@ public class SymbolicExpression
         Cons = cons;
     }
 
+    [MemberNotNullWhen(true, nameof(Atom))]
     public bool IsAtom()
     {
         return Type == SymbolicExpressionType.Atom && Atom != null;
     }
 
+    [MemberNotNullWhen(true, nameof(Cons))]
     public bool IsCons()
     {
         return Type == SymbolicExpressionType.Cons && Cons != null;
