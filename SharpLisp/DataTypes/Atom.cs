@@ -38,6 +38,11 @@ public class Atom
     {
         return Type == typeof(Function);
     }
+
+    public bool IsPrimitive()
+    {
+        return Type == typeof(Primitive);
+    }
     
     public bool IsNil()
     {
@@ -102,6 +107,15 @@ public class Atom
         }
         return Convert.ChangeType(Value, Type);
     }
+    
+    public Primitive GetPrimitive()
+    {
+        if (!IsPrimitive())
+        {
+            throw new AtomTypeException(Type, typeof(Primitive));
+        }
+        return Convert.ChangeType(Value, Type);
+    }
 
     public override string ToString()
     {
@@ -109,7 +123,13 @@ public class Atom
         {
             return $"{Value}";
         }
+
+        if (IsFloat() || IsInt())
+        {
+            // desetinná tečka
+            return Convert.ChangeType(Value, Type).ToString(CultureInfo.InvariantCulture) ?? "";
+        }
         
-        return Convert.ChangeType(Value, Type).ToString(CultureInfo.InvariantCulture) ?? "";
+        return Convert.ChangeType(Value, Type).ToString() ?? "";
     }
 }

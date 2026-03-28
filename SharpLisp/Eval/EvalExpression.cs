@@ -32,6 +32,8 @@ public static class EvalExpression
             SpecialOperatorsNames.Quote => EvaluateQuote(args),
             SpecialOperatorsNames.If => EvaluateIf(args, environment),
             SpecialOperatorsNames.Lambda => EvaluateLambda(args, environment),
+            SpecialOperatorsNames.Function => EvaluateFunctionOp(args, environment),
+            SpecialOperatorsNames.Funcall => EvaluateFuncall(args, environment),
             _ => EvaluateFunction(op, args, environment)
         };
     }
@@ -70,64 +72,86 @@ public static class EvalExpression
         return SymbolicExpressionFactory.Function(new Function(lambdaArgs.Select(x => x.Atom!.GetSymbol()).ToList(), body, newEnv));
     }
 
-    public static SymbolicExpression EvaluateFunctionOp()
+    private static SymbolicExpression EvaluateFunctionOp(List<SymbolicExpression> args, Environment environment)
     {
-        return SymbolicExpressionFactory.Nil;
+        FunctionUtils.CheckNumberOfArgs(SpecialOperatorsNames.Function, args, 1);
+        var symbol = Eval.Evaluate(args[0]);
+        if (!symbol.IsAtom() || !symbol.Atom.IsSymbol())
+        {
+            throw new FunctionArgNotSymbolException(SpecialOperatorsNames.Function);
+        }
+
+        var symbolName = symbol.Atom.GetSymbol().Name;
+
+        if (environment.TryGetPrimitive(symbolName, out var primitive))
+        {
+            return SymbolicExpressionFactory.Primitive(primitive);
+        }
+        if (environment.TryGetFunction(symbolName, out var function))
+        {
+            return SymbolicExpressionFactory.Function(function);
+        }
+
+        throw new FunctionNotFoundException(symbolName);
     }
-    
-    public static SymbolicExpression EvaluateFuncall(List<SymbolicExpression> args, Environment environment)
+
+    private static SymbolicExpression EvaluateFuncall(List<SymbolicExpression> args, Environment environment)
     {
-        var functionArg = args[0];
-        if (!functionArg.IsAtom() || !functionArg.Atom.IsFunction())
+        var functionArg = Eval.EvaluateInEnv(args[0], environment);
+        var rest = ListUtils.Mapcar(args.Cdr(), expression => Eval.EvaluateInEnv(expression, environment));
+        if (!functionArg.IsAtom())
         {
             throw new FunctionArgNotFunctionException(SpecialOperatorsNames.Funcall);
         }
 
-        var function = functionArg.Atom.GetFunction();
-        var funArgs = ListUtils.Mapcar(args.Cdr(), expression => Eval.EvaluateInEnv(expression, environment));
-        if (funArgs.Count != function.Parameters.Count)
+        if (functionArg.Atom.IsPrimitive())
         {
-            throw new FunctionArgCountException(SpecialOperatorsNames.Funcall, function.Parameters.Count, funArgs.Count);
+            return ApplyPrimitive(functionArg.Atom.GetPrimitive(), rest);
         }
 
-        for (int i = 0; i < funArgs.Count; i++)
+        if (functionArg.Atom.IsFunction())
         {
-            var param = function.Parameters[i];
-            var arg = funArgs[i];
-            if (arg.IsAtom() && arg.Atom.IsFunction())
-            {
-                function.Environment.AddFunction(param.ToString(), arg.Atom.GetFunction());
-                continue;
-            }
-            function.Environment.AddValue(param.ToString(), arg);
+            return ApplyFunction(functionArg.Atom.GetFunction(), rest);
         }
-
-        return Eval.EvaluateInEnv(function.Body, function.Environment);
+        
+        throw new FunctionArgNotFunctionException(SpecialOperatorsNames.Funcall);
     }
 
     private static SymbolicExpression EvaluateFunction(string op, List<SymbolicExpression> args, Environment environment)
     {
+        var evaluatedArgs = ListUtils.Mapcar(args, expression => Eval.EvaluateInEnv(expression, environment));
         if (environment.TryGetPrimitive(op, out var primitive))
         {
-            return ApplyPrimitive(primitive, args, environment);
+            return ApplyPrimitive(primitive, evaluatedArgs);
         }
         if (environment.TryGetFunction(op, out var function))
         {
-            return ApplyFunction(function, args, environment);
+            return ApplyFunction(function, evaluatedArgs);
         }
 
         throw new FunctionNotFoundException(op);
     }
 
-    private static SymbolicExpression ApplyPrimitive(Primitive primitive, List<SymbolicExpression> args, Environment environment)
+    private static SymbolicExpression ApplyPrimitive(Primitive primitive, List<SymbolicExpression> args)
     {
-        var argList = ListUtils.Mapcar(args, expression => Eval.EvaluateInEnv(expression, environment));
-        return primitive.Evaluate(argList);
+        return primitive.Evaluate(args);
     }
 
-    private static SymbolicExpression ApplyFunction(Function function, List<SymbolicExpression> args, Environment environment)
+    private static SymbolicExpression ApplyFunction(Function function, List<SymbolicExpression> args)
     {
-        // todo
-        return args[0];
+        var env = new Environment(function.Environment);
+        for (int i = 0; i < args.Count; i++)
+        {
+            var param = function.Parameters[i];
+            var arg = args[i];
+            if (arg.IsAtom() && arg.Atom.IsFunction())
+            {
+                env.AddFunction(param.ToString(), arg.Atom.GetFunction());
+                continue;
+            }
+            env.AddValue(param.ToString(), arg);
+        }
+
+        return Eval.EvaluateInEnv(function.Body, env);
     }
 }

@@ -28,6 +28,11 @@ public static class SymbolicExpressionFactory
     {
         return new SymbolicExpression(new Atom(function, typeof(Function)));
     }
+
+    public static SymbolicExpression Primitive(Primitive primitive)
+    {
+        return new SymbolicExpression(new Atom(primitive, typeof(Primitive)));
+    }
     
     public static SymbolicExpression Cons(SymbolicExpression car, SymbolicExpression cdr)
     {

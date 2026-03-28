@@ -15,7 +15,7 @@ public class Function
 
     public override string ToString()
     {
-        return "#FUNCTION";
+        return "#FUNCTION#";
     }
 }
  

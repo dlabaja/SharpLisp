@@ -13,4 +13,9 @@ public class Primitive
     {
         return EvalFunction(args);
     }
+
+    public override string ToString()
+    {
+        return "#FUNCTION-PRIMITIVE#";
+    }
 }
