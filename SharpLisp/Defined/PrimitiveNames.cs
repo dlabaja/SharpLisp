@@ -10,4 +10,7 @@ public static class PrimitiveNames
     public const string Gt = ">";
     public const string Sqrt = "SQRT";
     public const string Print = "PRINT";
+    public const string Cons = "CONS";
+    public const string Car = "CAR";
+    public const string Cdr = "CDR";
 }

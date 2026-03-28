@@ -23,9 +23,14 @@ public static class SymbolicExpressionFactory
     {
         return new SymbolicExpression(new Atom(content, typeof(string)));
     }
-
-    public static SymbolicExpression Nil { get; } = new SymbolicExpression(new Atom(new Symbol("NIL"), typeof(Symbol)));
     
-    public static SymbolicExpression T { get; } = new SymbolicExpression(new Atom(new Symbol("T"), typeof(Symbol)));
+    public static SymbolicExpression Cons(SymbolicExpression car, SymbolicExpression cdr)
+    {
+        return new SymbolicExpression(new Cons(car, cdr));
+    }
+
+    public static SymbolicExpression Nil { get; } = Symbol("NIL");
+    
+    public static SymbolicExpression T { get; } = Symbol("T");
 
 }

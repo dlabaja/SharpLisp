@@ -56,6 +56,6 @@ public class SymbolicExpression
         {
             return Atom.ToString();
         }
-        return Cons!.ListString();   
+        return Cons!.ToString();   
     }
 }

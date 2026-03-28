@@ -19,10 +19,13 @@ public static class GlobalEnvironment
         env.AddPrimitive(PrimitiveNames.Gt, new Primitive(PrimitiveFunctions.GtPrimitive));
         env.AddPrimitive(PrimitiveNames.Sqrt, new Primitive(PrimitiveFunctions.SqrtPrimitive));
         env.AddPrimitive(PrimitiveNames.Print, new Primitive(PrimitiveFunctions.PrintPrimitive));
+        env.AddPrimitive(PrimitiveNames.Cons, new Primitive(PrimitiveFunctions.ConsPrimitive));
+        env.AddPrimitive(PrimitiveNames.Car, new Primitive(PrimitiveFunctions.CarPrimitive));
+        env.AddPrimitive(PrimitiveNames.Cdr, new Primitive(PrimitiveFunctions.CdrPrimitive));
         env.AddValue("PI", SymbolicExpressionFactory.Float(double.Pi));
         env.AddValue("E", SymbolicExpressionFactory.Float(double.E));
         env.AddValue("NIL", SymbolicExpressionFactory.Nil);
-        env.AddValue("T", SymbolicExpressionFactory.Symbol("T"));
+        env.AddValue("T", SymbolicExpressionFactory.T);
         return env;
     }
 }

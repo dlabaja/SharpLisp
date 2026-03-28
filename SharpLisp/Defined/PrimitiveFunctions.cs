@@ -70,7 +70,7 @@ public static class PrimitiveFunctions
         FunctionUtils.CheckNumberOfArgs(PrimitiveNames.Eql, args, 2);
         var arg1 = args[0];
         var arg2 = args[1];
-        if (AllAtoms(args) && !arg1.Atom.IsString() && !arg2.Atom.IsString()
+        if (AllAtoms(args) && !arg1.Atom!.IsString() && !arg2.Atom!.IsString()
             && Equals(arg1.Atom.Value, arg2.Atom.Value))
         {
             return SymbolicExpressionFactory.T;
@@ -86,7 +86,7 @@ public static class PrimitiveFunctions
     
     public static SymbolicExpression GtPrimitive(List<SymbolicExpression> args)
     {
-        FunctionUtils.CheckNumberOfArgs(PrimitiveNames.Eql, args, 2);
+        FunctionUtils.CheckNumberOfArgs(PrimitiveNames.Gt, args, 2);
         if (!AllNumber(args))
         {
             throw new FunctionArgNotNumberException(PrimitiveNames.Gt);
@@ -98,6 +98,34 @@ public static class PrimitiveFunctions
         }
 
         return SymbolicExpressionFactory.Nil;
+    }
+
+    public static SymbolicExpression ConsPrimitive(List<SymbolicExpression> args)
+    {
+        FunctionUtils.CheckNumberOfArgs(PrimitiveNames.Cons, args, 2);
+        return SymbolicExpressionFactory.Cons(args[0], args[1]);
+    }
+    
+    public static SymbolicExpression CarPrimitive(List<SymbolicExpression> args)
+    {
+        FunctionUtils.CheckNumberOfArgs(PrimitiveNames.Car, args, 1);
+        var arg = args[0];
+        if (arg.IsCons())
+        {
+            return arg.Cons.Car;
+        }
+        throw new FunctionArgNotConsException(PrimitiveNames.Car);
+    }
+    
+    public static SymbolicExpression CdrPrimitive(List<SymbolicExpression> args)
+    {
+        FunctionUtils.CheckNumberOfArgs(PrimitiveNames.Cdr, args, 1);
+        var arg = args[0];
+        if (arg.IsCons())
+        {
+            return arg.Cons.Cdr;
+        }
+        throw new FunctionArgNotConsException(PrimitiveNames.Cdr);
     }
     
     private static SymbolicExpression NumberFoldrPrimitive(string funcName, List<SymbolicExpression> args, Func<long, long, long> funcInt, Func<double, double, double> funcFloat, int init)

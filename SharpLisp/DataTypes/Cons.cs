@@ -11,43 +11,48 @@ public class Cons
         Cdr = cdr;
     }
 
-    public bool IsListCons()
+    private Atom GetLastCdr()
     {
-        return Car.IsAtom() && 
-               (Cdr.IsCons() || (Cdr.Atom != null && Cdr.Atom.IsNil()));
-    }
-
-    private string ListStringRec(Cons? cons)
-    {
-        if (cons == null)
+        if (Cdr.IsAtom())
         {
-            return "";
-        }
-        
-        if (cons.Car.IsCons())
-        {
-            return $"{cons.Car.Cons!.ListString()} {ListStringRec(cons.Cdr.Cons)}";
+            return Cdr.Atom;
         }
 
-        return $"{cons.Car} {ListStringRec(cons.Cdr.Cons)}";
+        return Cdr.Cons!.GetLastCdr();
     }
 
-    public string ListString()
+    private string PrintPureList()
     {
-        return "(" + ListStringRec(this).Trim() + ")";
-    }
-
-    public override string ToString()
-    {
-        if (Cdr.Atom != null)
+        if (Cdr.IsAtom())
         {
-            if (Cdr.Atom.IsNil())
-            {
-                return $"{Car}";
-            }
+            return $"{Car}";
+        }
 
+        return $"{Car} {Cdr.Cons!.PrintPureList()}";;
+    }
+    
+    private string PrintDotList()
+    {
+        if (Cdr.IsAtom())
+        {
             return $"{Car} . {Cdr}";
         }
-        return $"{Car} {Cdr}";
+
+        return $"{Car} {Cdr.Cons!.PrintDotList()}";
+    }
+    
+    public override string ToString()
+    {
+        var lastCdr = GetLastCdr();
+        string content;
+        if (lastCdr.IsNil())
+        {
+            content = PrintPureList();
+        }
+        else
+        {
+            content = PrintDotList();
+        }
+        return "(" + content.Trim() + ")";
     }
 }
