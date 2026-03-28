@@ -14,6 +14,41 @@ public static class FunctionUtils
 
         throw new FunctionArgCountException(funcName, requiredNumberOfArgs, args.Count);
     }
+
+    public static Symbol SymbolArg(string funcName, SymbolicExpression expr, bool omitBools = true)
+    {
+        if (!expr.IsAtom() || !expr.Atom.IsSymbol())
+        {
+            throw new FunctionArgNotSymbolException(funcName);
+        }
+
+        if (omitBools && (expr.Atom.IsT() || expr.Atom.IsNil()))
+        {
+            throw new FunctionArgNotSymbolException(funcName);
+        }
+        
+        return expr.Atom.GetSymbol();
+    }
+    
+    public static Function FunctionArg(string funcName, SymbolicExpression expr)
+    {
+        if (!expr.IsAtom() || !expr.Atom.IsFunction())
+        {
+            throw new FunctionArgNotFunctionException(funcName);
+        }
+        
+        return expr.Atom.GetFunction();
+    }
+    
+    public static Primitive PrimitiveArg(string funcName, SymbolicExpression expr)
+    {
+        if (!expr.IsAtom() || !expr.Atom.IsPrimitive())
+        {
+            throw new FunctionArgNotFunctionException(funcName);
+        }
+        
+        return expr.Atom.GetPrimitive();
+    }
     
     public static bool AllAtoms(List<SymbolicExpression> args)
     {

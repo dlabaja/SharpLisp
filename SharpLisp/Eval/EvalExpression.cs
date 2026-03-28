@@ -34,10 +34,12 @@ public static class EvalExpression
             SpecialOperatorsNames.Lambda => EvaluateLambda(args, environment),
             SpecialOperatorsNames.Function => EvaluateFunctionOp(args, environment),
             SpecialOperatorsNames.Funcall => EvaluateFuncall(args, environment),
+            SpecialOperatorsNames.Defun => EvaluateDefun(args, environment),
+            SpecialOperatorsNames.Labels => EvaluateLabels(args, environment),
             _ => EvaluateFunction(op, args, environment)
         };
     }
-    
+
     private static SymbolicExpression EvaluateQuote(List<SymbolicExpression> args)
     {
         FunctionUtils.CheckNumberOfArgs(SpecialOperatorsNames.Quote, args, 1);
@@ -75,14 +77,7 @@ public static class EvalExpression
     private static SymbolicExpression EvaluateFunctionOp(List<SymbolicExpression> args, Environment environment)
     {
         FunctionUtils.CheckNumberOfArgs(SpecialOperatorsNames.Function, args, 1);
-        var symbol = Eval.Evaluate(args[0]);
-        if (!symbol.IsAtom() || !symbol.Atom.IsSymbol())
-        {
-            throw new FunctionArgNotSymbolException(SpecialOperatorsNames.Function);
-        }
-
-        var symbolName = symbol.Atom.GetSymbol().Name;
-
+        var symbolName = FunctionUtils.SymbolArg(SpecialOperatorsNames.Function, Eval.Evaluate(args[0])).Name;
         if (environment.TryGetPrimitive(symbolName, out var primitive))
         {
             return SymbolicExpressionFactory.Primitive(primitive);
@@ -130,6 +125,43 @@ public static class EvalExpression
         }
 
         throw new FunctionNotFoundException(op);
+    }
+
+    private static SymbolicExpression EvaluateDefun(List<SymbolicExpression> args, Environment environment)
+    {
+        FunctionUtils.CheckNumberOfArgs(SpecialOperatorsNames.Defun, args, 3);
+        var name = FunctionUtils.SymbolArg(SpecialOperatorsNames.Defun, args[0]).Name;
+        var funcParams = ListUtils.ConsToList(args[1]);
+        var body = args[2];
+        if (!FunctionUtils.AllSymbol(funcParams))
+        {
+            throw new FunctionArgNotSymbolException(SpecialOperatorsNames.Defun);
+        }
+
+        var function = new Function(funcParams.Select(x => x.Atom!.GetSymbol()).ToList(), body, GlobalEnvironment.Environment);
+        GlobalEnvironment.Environment.AddFunction(name, function);
+        return SymbolicExpressionFactory.Function(function);
+    }
+    
+    private static SymbolicExpression EvaluateLabels(List<SymbolicExpression> args, Environment environment)
+    {
+        FunctionUtils.CheckNumberOfArgs(SpecialOperatorsNames.Labels, args, 2);
+        var env = new Environment(environment);
+        var funcs = ListUtils.ConsToList(args[0]);
+        foreach (var func in funcs)
+        {
+            var items = ListUtils.ConsToList(func);
+            var name = FunctionUtils.SymbolArg(SpecialOperatorsNames.Labels, items[0]);
+            var funcParams = ListUtils.ConsToList(items[1]);
+            var body = items[2];
+            if (!FunctionUtils.AllSymbol(funcParams))
+            {
+                throw new FunctionArgNotSymbolException(SpecialOperatorsNames.Labels);
+            }
+            env.AddFunction(name.Name, new Function(funcParams.Select(x => x.Atom!.GetSymbol()).ToList(), body, environment));
+        }
+
+        return Eval.EvaluateInEnv(args[1], env);
     }
 
     private static SymbolicExpression ApplyPrimitive(Primitive primitive, List<SymbolicExpression> args)

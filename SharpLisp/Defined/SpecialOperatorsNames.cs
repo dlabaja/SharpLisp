@@ -7,4 +7,6 @@ public static class SpecialOperatorsNames
     public const string Lambda = "LAMBDA";
     public const string Function = "FUNCTION";
     public const string Funcall = "FUNCALL";
+    public const string Defun = "DEFUN";
+    public const string Labels = "LABELS";
 }
