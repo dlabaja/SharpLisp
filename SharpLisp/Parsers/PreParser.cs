@@ -32,6 +32,7 @@ public static class PreParser
         var builder = new StringBuilder(new_exp);
         builder.Replace("()", "NIL");
         builder.Replace('\n', ' ');
+        builder.Replace('\t', ' ');
         return builder.ToString();
     }
 }
