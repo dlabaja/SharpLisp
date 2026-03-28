@@ -34,6 +34,11 @@ public static class SymbolicExpressionFactory
         return new SymbolicExpression(new Atom(primitive, typeof(Primitive)));
     }
     
+    public static SymbolicExpression Macro(Macro macro)
+    {
+        return new SymbolicExpression(new Atom(macro, typeof(Macro)));
+    }
+    
     public static SymbolicExpression Cons(SymbolicExpression car, SymbolicExpression cdr)
     {
         return new SymbolicExpression(new Cons(car, cdr));

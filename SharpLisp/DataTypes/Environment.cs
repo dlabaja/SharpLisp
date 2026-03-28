@@ -1,10 +1,9 @@
-using SharpLisp.Exceptions;
-
 namespace SharpLisp.DataTypes;
 
 public class Environment
 {
     public Environment? Parent { get; }
+    private readonly Dictionary<string, Macro> _macros = new Dictionary<string, Macro>();
     private readonly Dictionary<string, Function> _functions = new Dictionary<string, Function>();
     private readonly Dictionary<string, Primitive> _primitives = new Dictionary<string, Primitive>();
     private readonly Dictionary<string, SymbolicExpression> _values = new Dictionary<string, SymbolicExpression>();
@@ -12,6 +11,11 @@ public class Environment
     public Environment(Environment? parent)
     {
         Parent = parent;
+    }
+    
+    public void AddMacro(string name, Macro macro)
+    {
+        _macros.TryAdd(name, macro);
     }
     
     public void AddPrimitive(string name, Primitive primitive)
@@ -27,6 +31,25 @@ public class Environment
     public void AddValue(string name, SymbolicExpression expr)
     {
         _values.TryAdd(name, expr);
+    }
+    
+    public bool TryGetMacro(string name, out Macro value)
+    {
+        if (_macros.TryGetValue(name, out var val))
+        {
+            value = val;
+            return true;
+        }
+        
+        if (Parent != null)
+        {
+            var p = Parent.TryGetMacro(name, out val);
+            value = val;
+            return p;
+        }
+
+        value = default;
+        return false;
     }
     
     public bool TryGetPrimitive(string name, out Primitive value)

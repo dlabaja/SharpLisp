@@ -128,6 +128,11 @@ public static class PrimitiveFunctions
         throw new FunctionArgNotConsException(PrimitiveNames.Cdr);
     }
 
+    public static SymbolicExpression ListPrimitive(List<SymbolicExpression> args)
+    {
+        return ListUtils.ListToCons(args);
+    }
+
     public static SymbolicExpression ErrorPrimitive(List<SymbolicExpression> args)
     {
         throw new UserException(string.Join(' ', args));

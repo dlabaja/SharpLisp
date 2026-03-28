@@ -32,11 +32,12 @@ public static class EvalExpression
             SpecialOperatorsNames.Quote => EvaluateQuote(args),
             SpecialOperatorsNames.If => EvaluateIf(args, environment),
             SpecialOperatorsNames.Lambda => EvaluateLambda(args, environment),
-            SpecialOperatorsNames.Function => EvaluateFunctionOp(args, environment),
+            SpecialOperatorsNames.Function => EvaluateFunction(args, environment),
             SpecialOperatorsNames.Funcall => EvaluateFuncall(args, environment),
-            SpecialOperatorsNames.Defun => EvaluateDefun(args, environment),
+            SpecialOperatorsNames.Defun => EvaluateDefun(args),
+            SpecialOperatorsNames.Defmacro => EvaluateDefmacro(args),
             SpecialOperatorsNames.Labels => EvaluateLabels(args, environment),
-            _ => EvaluateFunction(op, args, environment)
+            _ => EvaluateOperator(op, args, environment)
         };
     }
 
@@ -74,7 +75,7 @@ public static class EvalExpression
         return SymbolicExpressionFactory.Function(new Function(lambdaArgs.Select(x => x.Atom!.GetSymbol()).ToList(), body, newEnv));
     }
 
-    private static SymbolicExpression EvaluateFunctionOp(List<SymbolicExpression> args, Environment environment)
+    private static SymbolicExpression EvaluateFunction(List<SymbolicExpression> args, Environment environment)
     {
         FunctionUtils.CheckNumberOfArgs(SpecialOperatorsNames.Function, args, 1);
         var symbolName = FunctionUtils.SymbolArg(SpecialOperatorsNames.Function, Eval.Evaluate(args[0])).Name;
@@ -112,22 +113,7 @@ public static class EvalExpression
         throw new FunctionArgNotFunctionException(SpecialOperatorsNames.Funcall);
     }
 
-    private static SymbolicExpression EvaluateFunction(string op, List<SymbolicExpression> args, Environment environment)
-    {
-        var evaluatedArgs = ListUtils.Mapcar(args, expression => Eval.EvaluateInEnv(expression, environment));
-        if (environment.TryGetPrimitive(op, out var primitive))
-        {
-            return ApplyPrimitive(primitive, evaluatedArgs);
-        }
-        if (environment.TryGetFunction(op, out var function))
-        {
-            return ApplyFunction(function, evaluatedArgs);
-        }
-
-        throw new FunctionNotFoundException(op);
-    }
-
-    private static SymbolicExpression EvaluateDefun(List<SymbolicExpression> args, Environment environment)
+    private static SymbolicExpression EvaluateDefun(List<SymbolicExpression> args)
     {
         FunctionUtils.CheckNumberOfArgs(SpecialOperatorsNames.Defun, args, 3);
         var name = FunctionUtils.SymbolArg(SpecialOperatorsNames.Defun, args[0]).Name;
@@ -141,6 +127,22 @@ public static class EvalExpression
         var function = new Function(funcParams.Select(x => x.Atom!.GetSymbol()).ToList(), body, GlobalEnvironment.Environment);
         GlobalEnvironment.Environment.AddFunction(name, function);
         return SymbolicExpressionFactory.Function(function);
+    }
+    
+    private static SymbolicExpression EvaluateDefmacro(List<SymbolicExpression> args)
+    {
+        FunctionUtils.CheckNumberOfArgs(SpecialOperatorsNames.Defmacro, args, 3);
+        var name = FunctionUtils.SymbolArg(SpecialOperatorsNames.Defmacro, args[0]).Name;
+        var macroParams = ListUtils.ConsToList(args[1]);
+        var body = args[2];
+        if (!FunctionUtils.AllSymbol(macroParams))
+        {
+            throw new FunctionArgNotSymbolException(SpecialOperatorsNames.Defmacro);
+        }
+
+        var macro = new Macro(new Function(macroParams.Select(x => x.Atom!.GetSymbol()).ToList(), body, GlobalEnvironment.Environment));
+        GlobalEnvironment.Environment.AddMacro(name, macro);
+        return SymbolicExpressionFactory.Macro(macro);
     }
     
     private static SymbolicExpression EvaluateLabels(List<SymbolicExpression> args, Environment environment)
@@ -162,6 +164,25 @@ public static class EvalExpression
         }
 
         return Eval.EvaluateInEnv(args[1], env);
+    }
+    
+    private static SymbolicExpression EvaluateOperator(string op, List<SymbolicExpression> args, Environment environment)
+    {
+        if (environment.TryGetMacro(op, out var macro))
+        {
+            return Eval.EvaluateInEnv(ApplyFunction(macro.Expander, args), environment);
+        }
+        var evaluatedArgs = ListUtils.Mapcar(args, expression => Eval.EvaluateInEnv(expression, environment));
+        if (environment.TryGetPrimitive(op, out var primitive))
+        {
+            return ApplyPrimitive(primitive, evaluatedArgs);
+        }
+        if (environment.TryGetFunction(op, out var function))
+        {
+            return ApplyFunction(function, evaluatedArgs);
+        }
+
+        throw new FunctionNotFoundException(op);
     }
 
     private static SymbolicExpression ApplyPrimitive(Primitive primitive, List<SymbolicExpression> args)

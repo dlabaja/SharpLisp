@@ -1,4 +1,5 @@
 using SharpLisp.DataTypes;
+using SharpLisp.Factories;
 
 namespace SharpLisp.Utils;
 
@@ -40,5 +41,15 @@ public static class ListUtils
         }
 
         return res;
+    }
+
+    public static SymbolicExpression ListToCons(List<SymbolicExpression> list)
+    {
+        if (list.Count == 0)
+        {
+            return SymbolicExpressionFactory.Nil;
+        }
+
+        return SymbolicExpressionFactory.Cons(list.Car(), ListToCons(list.Cdr()));
     }
 }
