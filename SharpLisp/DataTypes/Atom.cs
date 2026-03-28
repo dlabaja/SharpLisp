@@ -5,7 +5,7 @@ namespace SharpLisp.DataTypes;
 
 public class Atom
 {
-    private dynamic Value { get; }
+    public dynamic Value { get; }
     public Type Type { get; }
 
     public Atom(dynamic value, Type type)
@@ -36,7 +36,12 @@ public class Atom
 
     public bool IsNil()
     {
-        return Type == typeof(Nil);
+        return Type == typeof(Symbol) && GetSymbol().Name == "NIL";
+    }
+    
+    public bool IsT()
+    {
+        return Type == typeof(Symbol) && GetSymbol().Name == "T";
     }
 
     public long GetInt()
@@ -93,7 +98,7 @@ public class Atom
 
         if (IsSymbol())
         {
-            return Value.ToString().ToUpper();
+            return GetSymbol().Name.ToUpper();
         }
         return Convert.ChangeType(Value, Type).ToString(CultureInfo.InvariantCulture) ?? "";
     }

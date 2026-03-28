@@ -17,10 +17,6 @@ public static class AtomParser
         {
             atom = SymbolicExpressionFactory.Int(num);
         }
-        else if (expr.Equals("NIL", StringComparison.CurrentCultureIgnoreCase))
-        {
-            atom = SymbolicExpressionFactory.Nil;
-        }
         else if (expr.StartsWith('"') && expr.EndsWith('"'))
         {
             atom = SymbolicExpressionFactory.String(expr);

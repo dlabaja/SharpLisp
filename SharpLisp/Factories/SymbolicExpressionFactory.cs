@@ -6,7 +6,7 @@ public static class SymbolicExpressionFactory
 {
     public static SymbolicExpression Symbol(string name)
     {
-        return new SymbolicExpression(new Atom(name.ToUpper(), typeof(Symbol)));
+        return new SymbolicExpression(new Atom(new Symbol(name.ToUpper()), typeof(Symbol)));
     }
     
     public static SymbolicExpression Int(long value)
@@ -24,5 +24,8 @@ public static class SymbolicExpressionFactory
         return new SymbolicExpression(new Atom(content, typeof(string)));
     }
 
-    public static SymbolicExpression Nil { get; } = new SymbolicExpression(new Atom("", typeof(Nil)));
+    public static SymbolicExpression Nil { get; } = new SymbolicExpression(new Atom(new Symbol("NIL"), typeof(Symbol)));
+    
+    public static SymbolicExpression T { get; } = new SymbolicExpression(new Atom(new Symbol("T"), typeof(Symbol)));
+
 }
