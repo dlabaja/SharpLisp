@@ -48,7 +48,7 @@ public static class PrimitiveFunctions
     public static SymbolicExpression SqrtPrimitive(List<SymbolicExpression> args)
     {
         FunctionUtils.CheckNumberOfArgs(PrimitiveNames.Sqrt, args, 1);
-        if (AllNumber(args))
+        if (FunctionUtils.AllNumber(args))
         {
             return SymbolicExpressionFactory.Float(double.Sqrt(args[0].Atom!.GetNumber()));
         }
@@ -70,7 +70,7 @@ public static class PrimitiveFunctions
         FunctionUtils.CheckNumberOfArgs(PrimitiveNames.Eql, args, 2);
         var arg1 = args[0];
         var arg2 = args[1];
-        if (AllAtoms(args) && !arg1.Atom!.IsString() && !arg2.Atom!.IsString()
+        if (FunctionUtils.AllAtoms(args) && !arg1.Atom!.IsString() && !arg2.Atom!.IsString()
             && Equals(arg1.Atom.Value, arg2.Atom.Value))
         {
             return SymbolicExpressionFactory.T;
@@ -87,7 +87,7 @@ public static class PrimitiveFunctions
     public static SymbolicExpression GtPrimitive(List<SymbolicExpression> args)
     {
         FunctionUtils.CheckNumberOfArgs(PrimitiveNames.Gt, args, 2);
-        if (!AllNumber(args))
+        if (!FunctionUtils.AllNumber(args))
         {
             throw new FunctionArgNotNumberException(PrimitiveNames.Gt);
         }
@@ -127,41 +127,31 @@ public static class PrimitiveFunctions
         }
         throw new FunctionArgNotConsException(PrimitiveNames.Cdr);
     }
+
+    public static SymbolicExpression ErrorPrimitive(List<SymbolicExpression> args)
+    {
+        throw new UserException(string.Join(' ', args));
+    }
     
     private static SymbolicExpression NumberFoldrPrimitive(string funcName, List<SymbolicExpression> args, Func<long, long, long> funcInt, Func<double, double, double> funcFloat, int init)
     {
-        if (!AllAtoms(args))
+        if (!FunctionUtils.AllAtoms(args))
         {
             throw new FunctionArgNotAtomException(funcName);
         }
 
-        if (AllInt(args))
+        if (FunctionUtils.AllInt(args))
         {
             var sub = ListUtils.Foldr(args.Select(x => x.Atom!.GetInt()).ToList(), funcInt, init);
             return SymbolicExpressionFactory.Int(sub);
         }
 
-        if (AllNumber(args))
+        if (FunctionUtils.AllNumber(args))
         {
             var sub = ListUtils.Foldr(args.Select(x => x.Atom!.GetNumber()).ToList(), funcFloat, init);
             return SymbolicExpressionFactory.Float(sub);
         }
 
         throw new FunctionArgNotNumberException(funcName);
-    }
-    
-    private static bool AllAtoms(List<SymbolicExpression> args)
-    {
-        return args.All(arg => arg.Atom != null);
-    }
-    
-    private static bool AllInt(List<SymbolicExpression> args)
-    {
-        return args.All(arg => arg.Atom != null && arg.Atom.IsInt());
-    }
-    
-    private static bool AllNumber(List<SymbolicExpression> args)
-    {
-        return args.All(arg => arg.Atom != null && (arg.Atom.IsInt() || arg.Atom.IsFloat()));
     }
 }
