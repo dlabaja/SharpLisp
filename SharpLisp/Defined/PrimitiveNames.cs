@@ -13,4 +13,5 @@ public static class PrimitiveNames
     public const string Cons = "CONS";
     public const string Car = "CAR";
     public const string Cdr = "CDR";
+    public const string Error = "ERROR";
 }
