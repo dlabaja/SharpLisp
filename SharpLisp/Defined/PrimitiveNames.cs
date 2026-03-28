@@ -6,6 +6,8 @@ public static class PrimitiveNames
     public const string Subtract = "-";
     public const string Multiply = "*";
     public const string Divide = "/";
+    public const string Eql = "EQL";
+    public const string Gt = ">";
     public const string Sqrt = "SQRT";
     public const string Print = "PRINT";
 }

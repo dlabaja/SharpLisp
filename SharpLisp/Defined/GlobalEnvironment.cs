@@ -15,10 +15,14 @@ public static class GlobalEnvironment
         env.AddPrimitive(PrimitiveNames.Subtract, new Primitive(PrimitiveFunctions.SubtractPrimitive));
         env.AddPrimitive(PrimitiveNames.Multiply, new Primitive(PrimitiveFunctions.MultiplyPrimitive));
         env.AddPrimitive(PrimitiveNames.Divide, new Primitive(PrimitiveFunctions.DividePrimitive));
+        env.AddPrimitive(PrimitiveNames.Eql, new Primitive(PrimitiveFunctions.EqlPrimitive));
+        env.AddPrimitive(PrimitiveNames.Gt, new Primitive(PrimitiveFunctions.GtPrimitive));
         env.AddPrimitive(PrimitiveNames.Sqrt, new Primitive(PrimitiveFunctions.SqrtPrimitive));
         env.AddPrimitive(PrimitiveNames.Print, new Primitive(PrimitiveFunctions.PrintPrimitive));
         env.AddValue("PI", SymbolicExpressionFactory.Float(double.Pi));
         env.AddValue("E", SymbolicExpressionFactory.Float(double.E));
+        env.AddValue("NIL", SymbolicExpressionFactory.Nil);
+        env.AddValue("T", SymbolicExpressionFactory.Symbol("T"));
         return env;
     }
 }

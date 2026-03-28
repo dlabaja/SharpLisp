@@ -47,7 +47,7 @@ public static class PrimitiveFunctions
 
     public static SymbolicExpression SqrtPrimitive(List<SymbolicExpression> args)
     {
-        CheckNumberOfArgs(PrimitiveNames.Sqrt, args, 1);
+        FunctionUtils.CheckNumberOfArgs(PrimitiveNames.Sqrt, args, 1);
         if (AllNumber(args))
         {
             return SymbolicExpressionFactory.Float(double.Sqrt(args[0].Atom!.GetNumber()));
@@ -58,17 +58,46 @@ public static class PrimitiveFunctions
 
     public static SymbolicExpression PrintPrimitive(List<SymbolicExpression> args)
     {
-        CheckNumberOfArgs(PrimitiveNames.Print, args, 1);
-        var res = new List<string>();
-        foreach (var arg in args)
-        {
-            res.Add(arg.ToStringOutput());
-        }
-
+        FunctionUtils.CheckNumberOfArgs(PrimitiveNames.Print, args, 1);
         Console.ForegroundColor = ConsoleColor.Cyan;
-        Console.WriteLine("Print: " + string.Join(", ", res));
+        Console.WriteLine("Print: " + args[0].ToStringOutput());
         Console.ResetColor();
         return args[0];
+    }
+
+    public static SymbolicExpression EqlPrimitive(List<SymbolicExpression> args)
+    {
+        FunctionUtils.CheckNumberOfArgs(PrimitiveNames.Eql, args, 2);
+        var arg1 = args[0];
+        var arg2 = args[1];
+        if (AllAtoms(args) && !arg1.Atom.IsString() && !arg2.Atom.IsString()
+            && Equals(arg1.Atom.Value, arg2.Atom.Value))
+        {
+            return SymbolicExpressionFactory.T;
+        }
+        
+        if (Equals(arg1, arg2))
+        {
+            return SymbolicExpressionFactory.T;
+        }
+
+        return SymbolicExpressionFactory.Nil;
+    }
+    
+    public static SymbolicExpression GtPrimitive(List<SymbolicExpression> args)
+    {
+        FunctionUtils.CheckNumberOfArgs(PrimitiveNames.Eql, args, 2);
+        if (!AllNumber(args))
+        {
+            throw new FunctionArgNotNumberException(PrimitiveNames.Gt);
+        }
+        
+        if (args[0].Atom?.GetNumber() > args[1].Atom?.GetNumber())
+        {
+            return SymbolicExpressionFactory.T;
+        }
+
+        return SymbolicExpressionFactory.Nil;
     }
     
     private static SymbolicExpression NumberFoldrPrimitive(string funcName, List<SymbolicExpression> args, Func<long, long, long> funcInt, Func<double, double, double> funcFloat, int init)
@@ -91,16 +120,6 @@ public static class PrimitiveFunctions
         }
 
         throw new FunctionArgNotNumberException(funcName);
-    }
-
-    private static void CheckNumberOfArgs(string funcName, List<SymbolicExpression> args, int requiredNumberOfArgs)
-    {
-        if (args.Count == requiredNumberOfArgs)
-        {
-            return;
-        }
-
-        throw new FunctionArgCountException(funcName, requiredNumberOfArgs, args.Count);
     }
     
     private static bool AllAtoms(List<SymbolicExpression> args)
