@@ -24,6 +24,11 @@ public static class SymbolicExpressionFactory
         return new SymbolicExpression(new Atom(content, typeof(string)));
     }
     
+    public static SymbolicExpression Function(Function function)
+    {
+        return new SymbolicExpression(new Atom(function, typeof(Function)));
+    }
+    
     public static SymbolicExpression Cons(SymbolicExpression car, SymbolicExpression cdr)
     {
         return new SymbolicExpression(new Cons(car, cdr));

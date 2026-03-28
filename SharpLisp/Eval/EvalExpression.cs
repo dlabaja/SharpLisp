@@ -1,6 +1,7 @@
 using SharpLisp.DataTypes;
 using SharpLisp.Defined;
 using SharpLisp.Exceptions;
+using SharpLisp.Factories;
 using SharpLisp.Utils;
 using Environment = SharpLisp.DataTypes.Environment;
 
@@ -30,8 +31,15 @@ public static class EvalExpression
         {
             SpecialOperatorsNames.Quote => EvaluateQuote(args),
             SpecialOperatorsNames.If => EvaluateIf(args, environment),
+            SpecialOperatorsNames.Lambda => EvaluateLambda(args, environment),
             _ => EvaluateFunction(op, args, environment)
         };
+    }
+    
+    private static SymbolicExpression EvaluateQuote(List<SymbolicExpression> args)
+    {
+        FunctionUtils.CheckNumberOfArgs(SpecialOperatorsNames.Quote, args, 1);
+        return args[0];
     }
 
     private static SymbolicExpression EvaluateIf(List<SymbolicExpression> args, Environment environment)
@@ -47,11 +55,54 @@ public static class EvalExpression
 
         return Eval.EvaluateInEnv(a, environment);
     }
-    
-    private static SymbolicExpression EvaluateQuote(List<SymbolicExpression> args)
+
+    private static SymbolicExpression EvaluateLambda(List<SymbolicExpression> args, Environment environment)
     {
-        FunctionUtils.CheckNumberOfArgs(SpecialOperatorsNames.Quote, args, 1);
-        return args[0];
+        FunctionUtils.CheckNumberOfArgs(SpecialOperatorsNames.Lambda, args, 2);
+        var lambdaArgs = ListUtils.ConsToList(args[0]);
+        if (!FunctionUtils.AllSymbol(lambdaArgs))
+        {
+            throw new FunctionArgNotSymbolException(SpecialOperatorsNames.Lambda);
+        }
+
+        var body = args[1];
+        var newEnv = new Environment(environment);
+        return SymbolicExpressionFactory.Function(new Function(lambdaArgs.Select(x => x.Atom!.GetSymbol()).ToList(), body, newEnv));
+    }
+
+    public static SymbolicExpression EvaluateFunctionOp()
+    {
+        return SymbolicExpressionFactory.Nil;
+    }
+    
+    public static SymbolicExpression EvaluateFuncall(List<SymbolicExpression> args, Environment environment)
+    {
+        var functionArg = args[0];
+        if (!functionArg.IsAtom() || !functionArg.Atom.IsFunction())
+        {
+            throw new FunctionArgNotFunctionException(SpecialOperatorsNames.Funcall);
+        }
+
+        var function = functionArg.Atom.GetFunction();
+        var funArgs = ListUtils.Mapcar(args.Cdr(), expression => Eval.EvaluateInEnv(expression, environment));
+        if (funArgs.Count != function.Parameters.Count)
+        {
+            throw new FunctionArgCountException(SpecialOperatorsNames.Funcall, function.Parameters.Count, funArgs.Count);
+        }
+
+        for (int i = 0; i < funArgs.Count; i++)
+        {
+            var param = function.Parameters[i];
+            var arg = funArgs[i];
+            if (arg.IsAtom() && arg.Atom.IsFunction())
+            {
+                function.Environment.AddFunction(param.ToString(), arg.Atom.GetFunction());
+                continue;
+            }
+            function.Environment.AddValue(param.ToString(), arg);
+        }
+
+        return Eval.EvaluateInEnv(function.Body, function.Environment);
     }
 
     private static SymbolicExpression EvaluateFunction(string op, List<SymbolicExpression> args, Environment environment)

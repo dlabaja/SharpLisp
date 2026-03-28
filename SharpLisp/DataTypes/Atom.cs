@@ -34,6 +34,11 @@ public class Atom
         return Type == typeof(Symbol);
     }
 
+    public bool IsFunction()
+    {
+        return Type == typeof(Function);
+    }
+    
     public bool IsNil()
     {
         return Type == typeof(Symbol) && GetSymbol().Name == "NIL";
@@ -88,6 +93,15 @@ public class Atom
         }
         return Convert.ChangeType(Value, Type);
     }
+    
+    public Function GetFunction()
+    {
+        if (!IsFunction())
+        {
+            throw new AtomTypeException(Type, typeof(Function));
+        }
+        return Convert.ChangeType(Value, Type);
+    }
 
     public override string ToString()
     {
@@ -95,11 +109,7 @@ public class Atom
         {
             return $"{Value}";
         }
-
-        if (IsSymbol())
-        {
-            return GetSymbol().Name.ToUpper();
-        }
+        
         return Convert.ChangeType(Value, Type).ToString(CultureInfo.InvariantCulture) ?? "";
     }
 }
