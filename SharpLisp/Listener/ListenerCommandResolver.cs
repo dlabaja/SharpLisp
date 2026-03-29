@@ -1,6 +1,8 @@
 using SharpLisp.DataTypes;
 using SharpLisp.Defined;
 using SharpLisp.Factories;
+using SharpLisp.Utils;
+using System.Text.RegularExpressions;
 using Environment = System.Environment;
 
 namespace SharpLisp.Listener;
@@ -11,8 +13,22 @@ public class ListenerCommandResolver
     {
         InitHistoryValues();
     }
-    
+
     public void ResolveCommand(string command)
+    {
+        try
+        {
+            Resolve(command);
+        }
+        catch (Exception e)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(e.Message);
+            Console.ResetColor();
+        }
+    }
+
+    private void Resolve(string command)
     {
         if (string.IsNullOrWhiteSpace(command))
         {
@@ -21,19 +37,17 @@ public class ListenerCommandResolver
 
         var res = ResolveCommandByStart(command, "#END", EndCommand) ||
                   ResolveCommandByStart(command, "#ENV", EnvCommand) ||
-                  ResolveCommandByStart(command, "#HELP", HelpCommand);
+                  ResolveCommandByStart(command, "#HELP", HelpCommand) ||
                   ResolveCommandByStart(command, "#LOAD", LoadCommand);
 
         if (!res)
         {
-            Interpreter.Eval(command, out var exp);
-            if (exp != null)
-            {
-                RotateHistoryValues(exp);
-            }
+            var exp = Interpreter.Eval(command);
+            RotateHistoryValues(exp);
+            Console.WriteLine(exp);
         }
     }
-    
+
     private void InitHistoryValues()
     {
         var env = GlobalEnvironment.Environment;
@@ -68,11 +82,11 @@ public class ListenerCommandResolver
         Console.WriteLine("Exiting listener...");
         Environment.Exit(0);
     }
-    
+
     private static void EnvCommand(string command)
     {
         var env = GlobalEnvironment.Environment;
-        PrintEnv("Special operators:", 
+        PrintEnv("Special operators:",
             ["QUOTE", "IF", "LAMBDA", "FUNCTION", "FUNCALL", "DEFUN", "DEFMACRO", "LABELS", "ERROR"]);
         PrintEnv("Macros:", env.GetMacroNames());
         PrintEnv("Primitives:", env.GetPrimitiveNames());
@@ -86,13 +100,22 @@ public class ListenerCommandResolver
         {
             return;
         }
+
         Console.WriteLine(name);
         Console.WriteLine($"{string.Join(", ", values)}");
     }
 
     private static void LoadCommand(string command)
     {
-        
+        var path = Regex.Match(command, "\"(.*)\"").Groups[1].Value;
+        LoadPath(path);
+    }
+
+    private static void LoadPath(string path)
+    {
+        var content = File.ReadAllText(path);
+        var strExpr = "(list " + content + ")";
+        Console.WriteLine(Interpreter.Eval(strExpr));
     }
 
     private static void HelpCommand(string command)

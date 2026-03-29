@@ -5,21 +5,10 @@ namespace SharpLisp;
 
 public static class Interpreter
 {
-    public static void Eval(string expr, out SymbolicExpression? result)
+    public static SymbolicExpression Eval(string expr)
     {
-        result = null;
-        try
-        {
-            result = SharpLisp.Eval.Eval.Evaluate(
-                Parser.Parse(
-                    PreParser.PreParse(expr)));
-            Console.WriteLine(result.ToString());
-        }
-        catch (Exception e)
-        {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine(e.Message);
-            Console.ResetColor();
-        }
+        return SharpLisp.Eval.Eval.Evaluate(
+            Parser.Parse(
+                PreParser.PreParse(expr)));
     }
 }
