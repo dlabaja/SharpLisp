@@ -11,29 +11,34 @@ public static class GlobalEnvironment
     private static Environment GetGlobalEnvironment()
     {
         var env = new Environment(null);
-        env.AddPrimitive(PrimitiveNames.Sum, new Primitive(PrimitiveFunctions.SumPrimitive));
-        env.AddPrimitive(PrimitiveNames.Subtract, new Primitive(PrimitiveFunctions.SubtractPrimitive));
-        env.AddPrimitive(PrimitiveNames.Multiply, new Primitive(PrimitiveFunctions.MultiplyPrimitive));
-        env.AddPrimitive(PrimitiveNames.Divide, new Primitive(PrimitiveFunctions.DividePrimitive));
-        env.AddPrimitive(PrimitiveNames.Eql, new Primitive(PrimitiveFunctions.EqlPrimitive));
-        env.AddPrimitive(PrimitiveNames.Gt, new Primitive(PrimitiveFunctions.GtPrimitive));
-        env.AddPrimitive(PrimitiveNames.Sqrt, new Primitive(PrimitiveFunctions.SqrtPrimitive));
-        env.AddPrimitive(PrimitiveNames.Print, new Primitive(PrimitiveFunctions.PrintPrimitive));
-        env.AddPrimitive(PrimitiveNames.Cons, new Primitive(PrimitiveFunctions.ConsPrimitive));
-        env.AddPrimitive(PrimitiveNames.Car, new Primitive(PrimitiveFunctions.CarPrimitive));
-        env.AddPrimitive(PrimitiveNames.Cdr, new Primitive(PrimitiveFunctions.CdrPrimitive));
-        env.AddPrimitive(PrimitiveNames.List, new Primitive(PrimitiveFunctions.ListPrimitive));
-        env.AddPrimitive(PrimitiveNames.Atomp, new Primitive(PrimitiveFunctions.AtompPrimitive));
-        env.AddPrimitive(PrimitiveNames.Consp, new Primitive(PrimitiveFunctions.ConspPrimitive));
-        env.AddPrimitive(PrimitiveNames.Numberp, new Primitive(PrimitiveFunctions.NumberpPrimitive));
-        env.AddPrimitive(PrimitiveNames.Symbolp, new Primitive(PrimitiveFunctions.SymbolpPrimitive));
-        env.AddPrimitive(PrimitiveNames.Stringp, new Primitive(PrimitiveFunctions.StringpPrimitive));
-        env.AddPrimitive(PrimitiveNames.Functionp, new Primitive(PrimitiveFunctions.FunctionpPrimitive));
-        env.AddPrimitive(PrimitiveNames.Symbol, new Primitive(PrimitiveFunctions.SymbolPrimitive));
+        Add(PrimitiveNames.Sum, PrimitiveFunctions.SumPrimitive, env);
+        Add(PrimitiveNames.Subtract, PrimitiveFunctions.SubtractPrimitive, env);
+        Add(PrimitiveNames.Multiply, PrimitiveFunctions.MultiplyPrimitive, env);
+        Add(PrimitiveNames.Divide, PrimitiveFunctions.DividePrimitive, env);
+        Add(PrimitiveNames.Eql, PrimitiveFunctions.EqlPrimitive, env);
+        Add(PrimitiveNames.Gt, PrimitiveFunctions.GtPrimitive, env);
+        Add(PrimitiveNames.Sqrt, PrimitiveFunctions.SqrtPrimitive, env);
+        Add(PrimitiveNames.Print, PrimitiveFunctions.PrintPrimitive, env);
+        Add(PrimitiveNames.Cons, PrimitiveFunctions.ConsPrimitive, env);
+        Add(PrimitiveNames.Car, PrimitiveFunctions.CarPrimitive, env);
+        Add(PrimitiveNames.Cdr, PrimitiveFunctions.CdrPrimitive, env);
+        Add(PrimitiveNames.List, PrimitiveFunctions.ListPrimitive, env);
+        Add(PrimitiveNames.Atomp, PrimitiveFunctions.AtompPrimitive, env);
+        Add(PrimitiveNames.Consp, PrimitiveFunctions.ConspPrimitive, env);
+        Add(PrimitiveNames.Numberp, PrimitiveFunctions.NumberpPrimitive, env);
+        Add(PrimitiveNames.Symbolp, PrimitiveFunctions.SymbolpPrimitive, env);
+        Add(PrimitiveNames.Stringp, PrimitiveFunctions.StringpPrimitive, env);
+        Add(PrimitiveNames.Functionp, PrimitiveFunctions.FunctionpPrimitive, env);
+        Add(PrimitiveNames.Symbol, PrimitiveFunctions.SymbolPrimitive, env);
         env.AddValue("PI", SymbolicExpressionFactory.Float(double.Pi));
         env.AddValue("E", SymbolicExpressionFactory.Float(double.E));
         env.AddValue("NIL", SymbolicExpressionFactory.Nil);
         env.AddValue("T", SymbolicExpressionFactory.T);
         return env;
+    }
+
+    private static void Add(string name, Func<List<SymbolicExpression>, SymbolicExpression> func, Environment env)
+    {
+        env.AddPrimitive(name, new Primitive(name, func));
     }
 }

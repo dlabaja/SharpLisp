@@ -2,10 +2,12 @@ namespace SharpLisp.DataTypes;
 
 public class Primitive
 {
+    public string Name { get; }
     public Func<List<SymbolicExpression>, SymbolicExpression> EvalFunction { get; }
 
-    public Primitive(Func<List<SymbolicExpression>, SymbolicExpression> function)
+    public Primitive(string name, Func<List<SymbolicExpression>, SymbolicExpression> function)
     {
+        Name = name;
         EvalFunction = function;
     }
 
@@ -16,6 +18,6 @@ public class Primitive
 
     public override string ToString()
     {
-        return "#FUNCTION-PRIMITIVE#";
+        return $"#FUNCTION-{Name}-PRIMITIVE#";
     }
 }

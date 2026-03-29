@@ -73,7 +73,7 @@ public static class EvalExpression
 
         var body = args[1];
         var newEnv = new Environment(environment);
-        return SymbolicExpressionFactory.Function(new Function(lambdaArgs.Select(x => x.Atom!.GetSymbol()).ToList(), body, newEnv));
+        return SymbolicExpressionFactory.Function(new Function("LAMBDA", lambdaArgs.Select(x => x.Atom!.GetSymbol()).ToList(), body, newEnv));
     }
 
     private static SymbolicExpression EvaluateFunction(List<SymbolicExpression> args, Environment environment)
@@ -125,7 +125,7 @@ public static class EvalExpression
             throw new FunctionArgNotSymbolException(SpecialOperatorsNames.Defun);
         }
 
-        var function = new Function(funcParams.Select(x => x.Atom!.GetSymbol()).ToList(), body, GlobalEnvironment.Environment);
+        var function = new Function(name, funcParams.Select(x => x.Atom!.GetSymbol()).ToList(), body, GlobalEnvironment.Environment);
         GlobalEnvironment.Environment.AddFunction(name, function);
         return SymbolicExpressionFactory.Function(function);
     }
@@ -141,7 +141,7 @@ public static class EvalExpression
             throw new FunctionArgNotSymbolException(SpecialOperatorsNames.Defmacro);
         }
 
-        var macro = new Macro(new Function(macroParams.Select(x => x.Atom!.GetSymbol()).ToList(), body, GlobalEnvironment.Environment));
+        var macro = new Macro(new Function($"{name}-EXPANDER", macroParams.Select(x => x.Atom!.GetSymbol()).ToList(), body, GlobalEnvironment.Environment));
         GlobalEnvironment.Environment.AddMacro(name, macro);
         return SymbolicExpressionFactory.Macro(macro);
     }
@@ -154,14 +154,14 @@ public static class EvalExpression
         foreach (var func in funcs)
         {
             var items = ListUtils.ConsToList(func);
-            var name = FunctionUtils.SymbolArg(SpecialOperatorsNames.Labels, items[0]);
+            var name = FunctionUtils.SymbolArg(SpecialOperatorsNames.Labels, items[0]).Name;
             var funcParams = ListUtils.ConsToList(items[1]);
             var body = items[2];
             if (!FunctionUtils.AllSymbol(funcParams))
             {
                 throw new FunctionArgNotSymbolException(SpecialOperatorsNames.Labels);
             }
-            env.AddFunction(name.Name, new Function(funcParams.Select(x => x.Atom!.GetSymbol()).ToList(), body, environment));
+            env.AddFunction(name, new Function(name, funcParams.Select(x => x.Atom!.GetSymbol()).ToList(), body, environment));
         }
 
         return Eval.EvaluateInEnv(args[1], env);
