@@ -5,9 +5,9 @@ namespace SharpLisp.Parsers;
 
 public static class ExpressionParser
 {
-    private static string _atomChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-+/*-%!?.><=\"";
-    private static string _exprChars = "()";
-    
+    private const string _atomChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-+/*-%!?.><=\"";
+    private const string _exprChars = "()";
+
     public static SymbolicExpression ParseExpression(string expr)
     {
         var items = SplitExpression(expr);
@@ -57,23 +57,30 @@ public static class ExpressionParser
         var atomProcessing = false;
         var expressionProcessing = false;
         var numberOfBracketsToFind = 0;
+        var inString = false;
         for (int i = 0; i < expr.Length; i++)
         {
-            if (_atomChars.Contains(expr[i]) && !atomProcessing && !expressionProcessing)
+            var c = char.ToUpper(expr[i]);
+            if (c == '\"')
+            {
+                inString = !inString;
+            }
+            
+            if (_atomChars.Contains(c) && !atomProcessing && !expressionProcessing)
             {
                 atomProcessing = true;
                 start = i;
                 continue;
             }
 
-            if (!_atomChars.Contains(expr[i]) && atomProcessing)
+            if (!_atomChars.Contains(c) && atomProcessing && !inString)
             {
                 atomProcessing = false;
                 indexList.Add((start, i));
                 continue;
             }
 
-            if (_exprChars.Contains(expr[i]) && !atomProcessing && !expressionProcessing)
+            if (_exprChars.Contains(c) && !atomProcessing && !expressionProcessing)
             {
                 expressionProcessing = true;
                 numberOfBracketsToFind = 0;
@@ -81,13 +88,13 @@ public static class ExpressionParser
                 continue;
             }
 
-            if (expr[i] == '(' && expressionProcessing)
+            if (c == '(' && expressionProcessing)
             {
                 numberOfBracketsToFind++;
                 continue;
             }
 
-            if (expr[i] == ')' && expressionProcessing)
+            if (c == ')' && expressionProcessing)
             {
                 if (numberOfBracketsToFind == 0)
                 {
