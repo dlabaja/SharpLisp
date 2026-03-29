@@ -23,6 +23,13 @@ public static class GlobalEnvironment
         env.AddPrimitive(PrimitiveNames.Car, new Primitive(PrimitiveFunctions.CarPrimitive));
         env.AddPrimitive(PrimitiveNames.Cdr, new Primitive(PrimitiveFunctions.CdrPrimitive));
         env.AddPrimitive(PrimitiveNames.List, new Primitive(PrimitiveFunctions.ListPrimitive));
+        env.AddPrimitive(PrimitiveNames.Atomp, new Primitive(PrimitiveFunctions.AtompPrimitive));
+        env.AddPrimitive(PrimitiveNames.Consp, new Primitive(PrimitiveFunctions.ConspPrimitive));
+        env.AddPrimitive(PrimitiveNames.Numberp, new Primitive(PrimitiveFunctions.NumberpPrimitive));
+        env.AddPrimitive(PrimitiveNames.Symbolp, new Primitive(PrimitiveFunctions.SymbolpPrimitive));
+        env.AddPrimitive(PrimitiveNames.Stringp, new Primitive(PrimitiveFunctions.StringpPrimitive));
+        env.AddPrimitive(PrimitiveNames.Functionp, new Primitive(PrimitiveFunctions.FunctionpPrimitive));
+        env.AddPrimitive(PrimitiveNames.Symbol, new Primitive(PrimitiveFunctions.SymbolPrimitive));
         env.AddValue("PI", SymbolicExpressionFactory.Float(double.Pi));
         env.AddValue("E", SymbolicExpressionFactory.Float(double.E));
         env.AddValue("NIL", SymbolicExpressionFactory.Nil);

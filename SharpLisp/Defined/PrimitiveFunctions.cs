@@ -60,7 +60,7 @@ public static class PrimitiveFunctions
     {
         FunctionUtils.CheckNumberOfArgs(PrimitiveNames.Print, args, 1);
         Console.ForegroundColor = ConsoleColor.Cyan;
-        Console.WriteLine("Print: " + args[0].ToStringOutput());
+        Console.WriteLine($"Print: {args[0]}");
         Console.ResetColor();
         return args[0];
     }
@@ -131,6 +131,62 @@ public static class PrimitiveFunctions
     public static SymbolicExpression ListPrimitive(List<SymbolicExpression> args)
     {
         return ListUtils.ListToCons(args);
+    }
+    
+    public static SymbolicExpression AtompPrimitive(List<SymbolicExpression> args)
+    {
+        FunctionUtils.CheckNumberOfArgs(PrimitiveNames.Atomp, args, 1);
+        var arg = args[0];
+        return arg.IsAtom() ? SymbolicExpressionFactory.T : SymbolicExpressionFactory.Nil;
+    }
+    
+    public static SymbolicExpression ConspPrimitive(List<SymbolicExpression> args)
+    {
+        FunctionUtils.CheckNumberOfArgs(PrimitiveNames.Consp, args, 1);
+        var arg = args[0];
+        return arg.IsCons() ? SymbolicExpressionFactory.T : SymbolicExpressionFactory.Nil;
+    }
+    
+    public static SymbolicExpression NumberpPrimitive(List<SymbolicExpression> args)
+    {
+        FunctionUtils.CheckNumberOfArgs(PrimitiveNames.Numberp, args, 1);
+        var arg = args[0];
+        return arg.IsAtom() && arg.Atom.IsNumber() ? SymbolicExpressionFactory.T : SymbolicExpressionFactory.Nil;
+    }
+    
+    public static SymbolicExpression SymbolpPrimitive(List<SymbolicExpression> args)
+    {
+        FunctionUtils.CheckNumberOfArgs(PrimitiveNames.Symbolp, args, 1);
+        var arg = args[0];
+        return arg.IsAtom() && arg.Atom.IsSymbol() ? SymbolicExpressionFactory.T : SymbolicExpressionFactory.Nil;
+    }
+    
+    public static SymbolicExpression StringpPrimitive(List<SymbolicExpression> args)
+    {
+        FunctionUtils.CheckNumberOfArgs(PrimitiveNames.Stringp, args, 1);
+        var arg = args[0];
+        return arg.IsAtom() && arg.Atom.IsString() ? SymbolicExpressionFactory.T : SymbolicExpressionFactory.Nil;
+    }
+    
+    public static SymbolicExpression FunctionpPrimitive(List<SymbolicExpression> args)
+    {
+        FunctionUtils.CheckNumberOfArgs(PrimitiveNames.Functionp, args, 1);
+        var arg = args[0];
+        return arg.IsAtom() && arg.Atom.IsFunction() ? SymbolicExpressionFactory.T : SymbolicExpressionFactory.Nil;
+    }
+    
+    public static SymbolicExpression SymbolPrimitive(List<SymbolicExpression> args)
+    {
+        var result = string.Join("", args.Select(x => x.ToString()))
+            .Replace("\"", "")
+            .Replace("#", "")
+            .Replace(".", "")
+            .Replace(" ", "");
+        if (string.IsNullOrWhiteSpace(result))
+        {
+            throw new FunctionArgException($"{PrimitiveNames.Symbol} needs at least 1 argument");
+        }
+        return SymbolicExpressionFactory.Symbol(result);
     }
     
     private static SymbolicExpression NumberFoldrPrimitive(string funcName, List<SymbolicExpression> args, Func<long, long, long> funcInt, Func<double, double, double> funcFloat, int init)

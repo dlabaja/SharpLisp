@@ -24,6 +24,11 @@ public class Atom
         return Type == typeof(double);
     }
 
+    public bool IsNumber()
+    {
+        return IsInt() || IsFloat();
+    }
+
     public bool IsString()
     {
         return Type == typeof(string);
