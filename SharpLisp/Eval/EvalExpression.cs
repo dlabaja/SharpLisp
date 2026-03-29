@@ -141,7 +141,7 @@ public static class EvalExpression
             throw new FunctionArgNotSymbolException(SpecialOperatorsNames.Defmacro);
         }
 
-        var macro = new Macro(new Function($"{name}-EXPANDER", macroParams.Select(x => x.Atom!.GetSymbol()).ToList(), body, GlobalEnvironment.Environment));
+        var macro = new Macro(name, new Function($"{name}-EXPANDER", macroParams.Select(x => x.Atom!.GetSymbol()).ToList(), body, GlobalEnvironment.Environment));
         GlobalEnvironment.Environment.AddMacro(name, macro);
         return SymbolicExpressionFactory.Macro(macro);
     }
