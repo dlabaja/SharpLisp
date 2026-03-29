@@ -35,22 +35,22 @@ public class Environment
     
     public void AddMacro(string name, Macro macro)
     {
-        _macros.TryAdd(name, macro);
+        _macros[name] = macro;
     }
     
     public void AddPrimitive(string name, Primitive primitive)
     {
-        _primitives.TryAdd(name, primitive);
+        _primitives[name] = primitive;
     }
 
     public void AddFunction(string name, Function function)
     {
-        _functions.TryAdd(name, function);
+        _functions[name] = function;
     }
 
     public void AddValue(string name, SymbolicExpression expr)
     {
-        _values.TryAdd(name, expr);
+        _values[name] = expr;
     }
     
     public bool TryGetMacro(string name, out Macro value)
