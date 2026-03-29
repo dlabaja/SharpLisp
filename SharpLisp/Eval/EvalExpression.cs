@@ -37,6 +37,7 @@ public static class EvalExpression
             SpecialOperatorsNames.Defun => EvaluateDefun(args),
             SpecialOperatorsNames.Defmacro => EvaluateDefmacro(args),
             SpecialOperatorsNames.Labels => EvaluateLabels(args, environment),
+             SpecialOperatorsNames.Error => EvaluateError(args), 
             _ => EvaluateOperator(op, args, environment)
         };
     }
@@ -164,6 +165,11 @@ public static class EvalExpression
         }
 
         return Eval.EvaluateInEnv(args[1], env);
+    }
+
+    private static SymbolicExpression EvaluateError(List<SymbolicExpression> args)
+    {
+        throw new UserException(string.Join(' ', args));
     }
     
     private static SymbolicExpression EvaluateOperator(string op, List<SymbolicExpression> args, Environment environment)

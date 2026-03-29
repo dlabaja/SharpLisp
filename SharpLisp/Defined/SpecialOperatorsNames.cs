@@ -10,4 +10,5 @@ public static class SpecialOperatorsNames
     public const string Defun = "DEFUN";
     public const string Defmacro = "DEFMACRO";
     public const string Labels = "LABELS";
+    public const string Error = "ERROR";
 }

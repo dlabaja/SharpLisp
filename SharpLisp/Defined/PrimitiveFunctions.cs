@@ -132,11 +132,6 @@ public static class PrimitiveFunctions
     {
         return ListUtils.ListToCons(args);
     }
-
-    public static SymbolicExpression ErrorPrimitive(List<SymbolicExpression> args)
-    {
-        throw new UserException(string.Join(' ', args));
-    }
     
     private static SymbolicExpression NumberFoldrPrimitive(string funcName, List<SymbolicExpression> args, Func<long, long, long> funcInt, Func<double, double, double> funcFloat, int init)
     {
