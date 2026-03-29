@@ -72,8 +72,7 @@ public static class EvalExpression
         }
 
         var body = args[1];
-        var newEnv = new Environment(environment);
-        return SymbolicExpressionFactory.Function(new Function("LAMBDA", lambdaArgs.Select(x => x.Atom!.GetSymbol()).ToList(), body, newEnv));
+        return SymbolicExpressionFactory.Function(new Function("LAMBDA", lambdaArgs.Select(x => x.Atom!.GetSymbol()).ToList(), body, environment));
     }
 
     private static SymbolicExpression EvaluateFunction(List<SymbolicExpression> args, Environment environment)
