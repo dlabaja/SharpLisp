@@ -40,18 +40,6 @@ public class SymbolicExpression
 
     public override string ToString()
     {
-        switch (Type)
-        {
-            case SymbolicExpressionType.Atom:
-                return Atom?.ToString() ?? "";
-            case SymbolicExpressionType.Cons:
-                return Cons?.ToString() ?? "";
-        }
-        return "";
-    }
-
-    public string ToStringOutput()
-    {
         if (IsAtom())
         {
             return Atom.ToString();

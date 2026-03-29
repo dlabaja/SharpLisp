@@ -11,7 +11,7 @@ public static class Interpreter
             var exp = SharpLisp.Eval.Eval.Evaluate(
                 Parser.Parse(
                     PreParser.PreParse(expr)));
-            Console.WriteLine(exp.ToStringOutput());
+            Console.WriteLine(exp.ToString());
         }
         catch (Exception e)
         {
