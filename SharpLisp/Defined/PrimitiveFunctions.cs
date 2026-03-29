@@ -182,10 +182,17 @@ public static class PrimitiveFunctions
             .Replace("#", "")
             .Replace(".", "")
             .Replace(" ", "");
+        
         if (string.IsNullOrWhiteSpace(result))
         {
             throw new FunctionArgException($"{PrimitiveNames.Symbol} needs at least 1 argument");
         }
+
+        if ("01234567890".Contains(result[0]))
+        {
+            result = result.Insert(0, "S");
+        }
+        
         return SymbolicExpressionFactory.Symbol(result);
     }
     
