@@ -8,7 +8,7 @@ public class Listener
     {
         _listenerCommandResolver.Init();
         Console.WriteLine("-------------------");
-        Console.WriteLine("SharpLisp listerner");
+        Console.WriteLine("SharpLisp listener");
         Console.WriteLine("-------------------\n");
         Console.WriteLine("Type '#HELP' for help.\n");
 

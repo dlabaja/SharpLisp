@@ -1,6 +1,11 @@
 (defmacro and2 (a b)
     (list (quote if) a (list (quote if) b b nil) nil))
 
+(defmacro let1 (params body)
+    (list (quote funcall) 
+          (list (quote lambda) (list (car (car params))) body)
+          (car (cdr (car params)))))
+
 (defun = (a b)
     (eql a b))
 
