@@ -1,15 +1,24 @@
 namespace SharpLisp.Listener;
 
-public static class Listener
+public class Listener
 {
-    public static void Run()
+    private readonly ListenerCommandResolver _listenerCommandResolver = new ListenerCommandResolver();
+    
+    public void Run()
     {
-        new ListenerControls().Run();
+        _listenerCommandResolver.Init();
         Console.WriteLine("-------------------");
         Console.WriteLine("SharpLisp listerner");
         Console.WriteLine("-------------------\n");
         Console.WriteLine("Type '#HELP' for help.\n");
 
-        Console.Write("> ");
+        while (true)
+        {
+            // lepší než si to psát sám, má to i historii
+            var input = ReadLine.Read("> ");
+            ReadLine.AddHistory(input);
+            _listenerCommandResolver.ResolveCommand(input?.Trim() ?? "");
+            Console.WriteLine();
+        }
     }
 }

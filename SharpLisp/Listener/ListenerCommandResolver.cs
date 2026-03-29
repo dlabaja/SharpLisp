@@ -1,10 +1,18 @@
+using SharpLisp.DataTypes;
 using SharpLisp.Defined;
+using SharpLisp.Factories;
+using Environment = System.Environment;
 
 namespace SharpLisp.Listener;
 
-public class ListenerCommands
+public class ListenerCommandResolver
 {
-    public static void ResolveCommand(string command)
+    public void Init()
+    {
+        InitHistoryValues();
+    }
+    
+    public void ResolveCommand(string command)
     {
         if (string.IsNullOrWhiteSpace(command))
         {
@@ -18,8 +26,30 @@ public class ListenerCommands
 
         if (!res)
         {
-            Interpreter.Eval(command);
+            Interpreter.Eval(command, out var exp);
+            if (exp != null)
+            {
+                RotateHistoryValues(exp);
+            }
         }
+    }
+    
+    private void InitHistoryValues()
+    {
+        var env = GlobalEnvironment.Environment;
+        env.AddValue("***", SymbolicExpressionFactory.Nil);
+        env.AddValue("**", SymbolicExpressionFactory.Nil);
+        env.AddValue("*", SymbolicExpressionFactory.Nil);
+    }
+
+    private void RotateHistoryValues(SymbolicExpression latestValue)
+    {
+        var env = GlobalEnvironment.Environment;
+        env.TryGetValue("**", out var val2);
+        env.TryGetValue("*", out var val1);
+        env.AddValue("***", val2);
+        env.AddValue("**", val1);
+        env.AddValue("*", latestValue);
     }
 
     private static bool ResolveCommandByStart(string command, string start, Action<string> function)
