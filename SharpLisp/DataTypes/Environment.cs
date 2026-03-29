@@ -12,6 +12,26 @@ public class Environment
     {
         Parent = parent;
     }
+
+    public List<string> GetMacroNames()
+    {
+        return _macros.Keys.ToList();
+    }
+    
+    public List<string> GetFunctionNames()
+    {
+        return _functions.Keys.ToList();
+    }
+    
+    public List<string> GetPrimitiveNames()
+    {
+        return _primitives.Keys.ToList();
+    }
+    
+    public List<string> GetValueNames()
+    {
+        return _values.Keys.ToList();
+    }
     
     public void AddMacro(string name, Macro macro)
     {
