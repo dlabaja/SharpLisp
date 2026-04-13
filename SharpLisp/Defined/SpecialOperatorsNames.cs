@@ -11,4 +11,8 @@ public static class SpecialOperatorsNames
     public const string Defmacro = "DEFMACRO";
     public const string Labels = "LABELS";
     public const string Error = "ERROR";
+    public const string Progn = "PROGN";
+    public const string Setq = "SETQ";
+    public const string SetCar = "SET-CAR";
+    public const string SetCdr = "SET-CDR";
 }

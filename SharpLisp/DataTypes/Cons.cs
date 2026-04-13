@@ -2,8 +2,8 @@ namespace SharpLisp.DataTypes;
 
 public class Cons
 {
-    public SymbolicExpression Car { get; }
-    public SymbolicExpression Cdr { get; }
+    public SymbolicExpression Car { get; set; }
+    public SymbolicExpression Cdr { get; set; }
 
     public Cons(SymbolicExpression car, SymbolicExpression cdr)
     {

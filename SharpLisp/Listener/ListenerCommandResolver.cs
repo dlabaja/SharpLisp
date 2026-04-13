@@ -87,7 +87,7 @@ public class ListenerCommandResolver
     {
         var env = GlobalEnvironment.Environment;
         PrintEnv("Special operators:",
-            ["QUOTE", "IF", "LAMBDA", "FUNCTION", "FUNCALL", "DEFUN", "DEFMACRO", "LABELS", "ERROR"]);
+            ["QUOTE", "IF", "LAMBDA", "FUNCTION", "FUNCALL", "DEFUN", "DEFMACRO", "LABELS", "ERROR", "PROGN", "SETQ", "SET-CAR", "SET-CDR"]);
         PrintEnv("Macros:", env.GetMacroNames());
         PrintEnv("Primitives:", env.GetPrimitiveNames());
         PrintEnv("Functions:", env.GetFunctionNames());

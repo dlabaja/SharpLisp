@@ -37,7 +37,11 @@ public static class EvalExpression
             SpecialOperatorsNames.Defun => EvaluateDefun(args),
             SpecialOperatorsNames.Defmacro => EvaluateDefmacro(args),
             SpecialOperatorsNames.Labels => EvaluateLabels(args, environment),
-             SpecialOperatorsNames.Error => EvaluateError(args), 
+            SpecialOperatorsNames.Error => EvaluateError(args),
+            SpecialOperatorsNames.Progn => EvaluateProgn(args, environment), 
+            SpecialOperatorsNames.Setq => EvaluateSetq(args, environment),
+            SpecialOperatorsNames.SetCar => EvaluateSetCar(args, environment), 
+            SpecialOperatorsNames.SetCdr => EvaluateSetCdr(args, environment), 
             _ => EvaluateOperator(op, args, environment)
         };
     }
@@ -169,6 +173,66 @@ public static class EvalExpression
     private static SymbolicExpression EvaluateError(List<SymbolicExpression> args)
     {
         throw new UserException(string.Join(' ', args));
+    }
+
+    private static SymbolicExpression EvaluateProgn(List<SymbolicExpression> args, Environment environment)
+    {
+        return ListUtils.Mapcar(args, x => Eval.EvaluateInEnv(x, environment)).Last();
+    }
+
+    private static SymbolicExpression EvaluateSetq(List<SymbolicExpression> args, Environment environment)
+    {
+        FunctionUtils.CheckNumberOfArgs(SpecialOperatorsNames.Setq, args, 2);
+        var place = args[0];
+        var value = Eval.EvaluateInEnv(args[1], environment);
+        if (!place.IsAtom() || !place.Atom.IsSymbol())
+        {
+            throw new FunctionArgNotSymbolException(SpecialOperatorsNames.Setq);
+        }
+
+        var str = place.ToString();
+        if (!environment.TryGetFunction(str, out _) && !environment.TryGetValue(str, out _))
+        {
+            throw new ValueNotFoundException(str);
+        }
+            
+        if (value.IsAtom() && value.Atom.IsFunction())
+        {
+            environment.AddFunction(str, value.Atom.GetFunction());
+        }
+        else
+        {
+            environment.AddValue(str, value);
+        }
+        return SymbolicExpressionFactory.Nil;
+    }
+    
+    private static SymbolicExpression EvaluateSetCar(List<SymbolicExpression> args, Environment environment)
+    {
+        FunctionUtils.CheckNumberOfArgs(SpecialOperatorsNames.SetCar, args, 2);
+        var place = Eval.EvaluateInEnv(args[0], environment);
+        var value = Eval.EvaluateInEnv(args[1], environment);
+        if (!place.IsCons())
+        {
+            throw new FunctionArgNotSymbolException(SpecialOperatorsNames.SetCar);
+        }
+
+        place.Cons.Car = value;
+        return SymbolicExpressionFactory.Nil;
+    }
+    
+    private static SymbolicExpression EvaluateSetCdr(List<SymbolicExpression> args, Environment environment)
+    {
+        FunctionUtils.CheckNumberOfArgs(SpecialOperatorsNames.SetCdr, args, 2);
+        var place = Eval.EvaluateInEnv(args[0], environment);
+        var value = Eval.EvaluateInEnv(args[1], environment);
+        if (!place.IsCons())
+        {
+            throw new FunctionArgNotSymbolException(SpecialOperatorsNames.SetCdr);
+        }
+
+        place.Cons.Cdr = value;
+        return SymbolicExpressionFactory.Nil;
     }
     
     private static SymbolicExpression EvaluateOperator(string op, List<SymbolicExpression> args, Environment environment)
