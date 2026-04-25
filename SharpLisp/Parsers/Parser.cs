@@ -1,6 +1,5 @@
 using SharpLisp.DataTypes;
 using SharpLisp.Exceptions;
-using System.Text.RegularExpressions;
 
 namespace SharpLisp.Parsers;
 

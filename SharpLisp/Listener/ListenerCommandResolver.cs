@@ -102,7 +102,7 @@ public class ListenerCommandResolver
         }
 
         Console.WriteLine(name);
-        Console.WriteLine($"{string.Join(", ", values)}");
+        Console.WriteLine($"    {string.Join(", ", values)}");
     }
 
     private static void LoadCommand(string command)
