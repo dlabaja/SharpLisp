@@ -14,7 +14,14 @@ public static class PrimitiveFunctions
     
     public static SymbolicExpression SubtractPrimitive(List<SymbolicExpression> args)
     {
-        return NumberFoldrPrimitive(PrimitiveNames.Subtract, args, (a, b) => a - b, (a, b) => a - b, 0);
+        if (args.Count == 0)
+        {
+            throw new FunctionArgCountException(nameof(SubtractPrimitive), 1, 0);
+        }
+        var _args = new List<SymbolicExpression>(args.Cdr());
+        _args.Reverse();
+        var first = args.Car().Atom?.GetNumber() ?? throw new FunctionArgNotNumberException(nameof(SubtractPrimitive));
+        return NumberFoldrPrimitive(PrimitiveNames.Subtract, _args, (a, b) => b - a, (a, b) => b - a, first);
     }
 
     public static SymbolicExpression MultiplyPrimitive(List<SymbolicExpression> args)
@@ -196,7 +203,7 @@ public static class PrimitiveFunctions
         return SymbolicExpressionFactory.Symbol(result);
     }
     
-    private static SymbolicExpression NumberFoldrPrimitive(string funcName, List<SymbolicExpression> args, Func<long, long, long> funcInt, Func<double, double, double> funcFloat, int init)
+    private static SymbolicExpression NumberFoldrPrimitive(string funcName, List<SymbolicExpression> args, Func<long, long, long> funcInt, Func<double, double, double> funcFloat, double init) 
     {
         if (!FunctionUtils.AllAtoms(args))
         {
@@ -205,7 +212,7 @@ public static class PrimitiveFunctions
 
         if (FunctionUtils.AllInt(args))
         {
-            var sub = ListUtils.Foldr(args.Select(x => x.Atom!.GetInt()).ToList(), funcInt, init);
+            var sub = ListUtils.Foldr(args.Select(x => x.Atom!.GetInt()).ToList(), funcInt, (long)init);
             return SymbolicExpressionFactory.Int(sub);
         }
 
