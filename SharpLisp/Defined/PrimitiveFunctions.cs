@@ -18,9 +18,15 @@ public static class PrimitiveFunctions
         {
             throw new FunctionArgCountException(nameof(SubtractPrimitive), 1, 0);
         }
+        
         var _args = new List<SymbolicExpression>(args.Cdr());
         _args.Reverse();
+        
         var first = args.Car().Atom?.GetNumber() ?? throw new FunctionArgNotNumberException(nameof(SubtractPrimitive));
+        if (_args.Count == 0)
+        {
+            return SymbolicExpressionFactory.Float(-first);
+        }
         return NumberFoldrPrimitive(PrimitiveNames.Subtract, _args, (a, b) => b - a, (a, b) => b - a, first);
     }
 
